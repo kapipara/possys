@@ -15,7 +15,7 @@ class getNFCtag():
 
         for item in self.splitOut:
             if flag == 1:
-                print item
+                print(item)
                 flag = 0
             if item.find("ID") is not -1:
                 flag = 1
