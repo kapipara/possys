@@ -1,0 +1,23 @@
+# possysデータベースの構造
+ - データベース名: possys
+ - テーブルセット
+    - MemberList
+        - MemberNum char(3) not NULL
+        - Name nvarchar(50) not NULL
+        - Email nvarchar(200)
+        - primary key(DataNum)
+    - NFCID
+        - DataNum char(4) not NULL
+        - MemberNum char(3) not NULL
+        - IDm varchar(16) not NULL
+        - primary key(DataNum)
+    - MoneyLog
+        - LogNum char(10) not NULL
+        - MemberNum char(3) not NULL
+        - Date datatime not NULL
+        - Money int not NULL
+        - primary key(LogNum)
+    - ログイン名
+        - ID: possys_logic
+        - PS: pospos
+    
