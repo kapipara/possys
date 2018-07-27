@@ -2,17 +2,19 @@
  - データベース名: possys
  - テーブルセット
     - MemberList
-        - MemberNum char(3) not NULL
-        - Name nvarchar(50) not NULL
-        - Email nvarchar(200)
+        - MemberNum smallInt(4) not NULL Unsigned ZEROFILL
+        - Name varchar(255) not NULL
+        - Email varchar(255)
+        - wallet INT not NULL
         - primary key(DataNum)
     - NFCID
-        - DataNum char(4) not NULL
-        - MemberNum char(3) not NULL
-        - IDm varchar(16) not NULL
+        - DataNum smallInt(4) not NULL Unsigned ZEROFILL
+        - MemberNum smallInt(3) not NULL Unsigned ZEROFILL
+        - IDm varchar(255) not NULL
         - primary key(DataNum)
+        - foreign key(MemberNum) references MemberList(MemberNum)
     - MoneyLog
-        - LogNum char(10) not NULL
+        - LogNum int(10) not NULL Unsigned ZEROFILL
         - MemberNum char(3) not NULL
         - Date datatime not NULL
         - Money int not NULL
@@ -20,4 +22,6 @@
     - ログイン名
         - ID: possys_logic
         - PS: pospos
+    - MemberNumはMemberListに対し，外部キー制約をもつ
+
     

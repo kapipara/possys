@@ -33,9 +33,15 @@ class Database:
             exit()
 
     def checkIDm(self, IDm):
-        self.__open()
-        # NFCIDテーブルを全件取得
-        # SQLserver側で一致処理してもいいけど変数処理が面倒くさい
-        self.cursor.execute("SELECT * FROM NFCID")
-        serverData = cursor.fetchall()  # 取得データ代入
-        print(serverData)
+        try:
+            self.__open()
+            # NFCIDテーブルを全件取得
+            # executeで実行コマンドを指定，fetchallで実データすべてを取得
+            self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)
+            serverData = cursor.fetchall()  # 取得データ代入
+            return serverData
+        finally:
+            self.connection.close()
+
+temp = Database()
+print(temp.checkIDm("114514ABCDEF1919"))
