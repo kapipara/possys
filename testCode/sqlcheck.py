@@ -28,16 +28,16 @@ class Database:
         print("[  OK  ]: Establish database connection")
 
     # IDm照合処理
-    def checkIDm(self, IDm):
+    def checkIDm(self, userIDm):
         try:
             print("[START ]: check NFC IDm...")
             # NFCIDテーブルから条件付き全件取得
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
-            self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)   # 関数内はSQL文
+            self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got IDm Data")
             for i in serverData:
-                if IDm in serverData:
+                if userIDm in serverData:
                     return True
             return False
         except:
