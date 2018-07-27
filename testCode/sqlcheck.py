@@ -25,11 +25,12 @@ class Database:
                                               )
         # データベースとの，対話クラスのインスタンスを作成
         self.cursor = self.db.cursor()
-        print("[ OK ] : Establish database connection")
+        print("[  OK ] : Establish database connection")
 
     # IDm照合処理
     def checkIDm(self, IDm):
         try:
+            print("[START]: check NFC IDm...")
             # NFCIDテーブルから条件付き全件取得
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
             self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)   # 関数内はSQL文
@@ -42,7 +43,7 @@ class Database:
         finally:
             self.cursor.close()
             self.db.close()
-            print("[ERROR] Database Connection ERROR!\n")
+            print("[ERROR]: Database Connection ERROR!\n")
             return False
     
     # ユーザ追加
