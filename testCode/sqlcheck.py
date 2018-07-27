@@ -18,7 +18,7 @@ class Database:
 
         # データベースを参照
         # 各値はconfigファイルのDATABASEセクションから取得
-        self.db = self.mysql.connector.connect(host     = config.get('DATABASE','hostname'),
+        self.db = mysql.connector.connect(host     = config.get('DATABASE','hostname'),
                                                user     = config.get('DATABASE','username'),
                                                password = config.get('DATABASE','password'),
                                                database = config.get('DATABASE','databaseName')
