@@ -26,16 +26,24 @@ class Database:
         # データベースとの，対話クラスのインスタンスを作成
         self.cursor = self.db.cursor()
 
+    # IDm照合処理
     def checkIDm(self, IDm):
         try:
             # NFCIDテーブルを全件取得
-            # executeで実行コマンドを指定，fetchallで実データすべてを取得
+            # executeで実行コマンドを指定，fetchallで一致データすべてを取得
             self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)
             serverData = self.cursor.fetchall()  # 取得データ代入
-            return serverData
+            if IDm in serverData:
+                return True
+            else:
+                return False
         finally:
             self.cursor.close()
             self.db.close()
+    
+    # IDm追加処理
+    def addIDm(self, IDm, jobNum):
+        try:
 
 temp = Database()
 print(temp.checkIDm("114514ABCDEF1919"))
