@@ -41,7 +41,8 @@ class Database:
             serverData = cursor.fetchall()  # 取得データ代入
             return serverData
         finally:
-            self.connection.close()
+            self.db.close()
+            self.cursor.close()
 
 temp = Database()
 print(temp.checkIDm("114514ABCDEF1919"))
