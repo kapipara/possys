@@ -33,17 +33,14 @@ class Database:
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
             self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)
             serverData = self.cursor.fetchall()  # 取得データ代入
-            if IDm in serverData:
-                return True
-            else:
-                return False
+            for i in serverData:
+                if IDm in i:
+                    print(True)
+                else:
+                    print(False)
         finally:
             self.cursor.close()
             self.db.close()
     
-    # IDm追加処理
-    def addIDm(self, IDm, jobNum):
-        try:
-
 temp = Database()
 print(temp.checkIDm("114514ABCDEF1919"))
