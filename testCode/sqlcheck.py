@@ -83,13 +83,13 @@ class Database:
             self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, wallet) VALUES ('%d','%s','%s',0)"%(newMemberNum, name, mail)) # 関数内はSQL文 変数はタブタプ
             self.cursor.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
-
+        '''
         except:
             self.cursor.close()
             self.db.close()
             print("[ERROR ] Database Connection ERROR!\n")
             return False
-        
+        '''
 temp = Database()
 print(temp.checkIDm("114514ABCDEF1919"))
 temp.addUser()
