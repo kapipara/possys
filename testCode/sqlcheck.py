@@ -88,4 +88,4 @@ class Database:
         
 temp = Database()
 print(temp.checkIDm("114514ABCDEF1919"))
-temp.addUser()
+# temp.addUser()
