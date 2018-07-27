@@ -19,23 +19,23 @@ class Database:
         # データベースを参照
         # 各値はconfigファイルのDATABASEセクションから取得
         self.db = mysql.connector.connect(host     = config.get('DATABASE','hostname'),
-                                               user     = config.get('DATABASE','username'),
-                                               password = config.get('DATABASE','password'),
-                                               database = config.get('DATABASE','databaseName')
-                                              )
+                                          user     = config.get('DATABASE','username'),
+                                          password = config.get('DATABASE','password'),
+                                          database = config.get('DATABASE','databaseName')
+                                         )
         # データベースとの，対話クラスのインスタンスを作成
         self.cursor = self.db.cursor()
-        print("[  OK ]: Establish database connection")
+        print("[  OK  ]: Establish database connection")
 
     # IDm照合処理
     def checkIDm(self, IDm):
         try:
-            print("[START]: check NFC IDm...")
+            print("[START ]: check NFC IDm...")
             # NFCIDテーブルから条件付き全件取得
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
             self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
-            print("[  OK ]: Got IDm Data")
+            print("[  OK  ]: Got IDm Data")
             for i in serverData:
                 if IDm in serverData:
                     return True
@@ -45,13 +45,14 @@ class Database:
         except:
             self.cursor.close()
             self.db.close()
-            print("[ERROR]: Database Connection ERROR!\n")
+            print("[ERROR ]: Database Connection ERROR!\n")
             return False
     
     # ユーザ追加
     def addUser(self):
         cond = True
         try:
+            print("[START ]: add User...")
             while cond:
                 print("新規ユーザー登録を行います。\n")
                 print("UserName:")
@@ -77,15 +78,16 @@ class Database:
             # SQL文の意味は，「MemberNumのデータが欲しい，MemberListから，次の条件に一致するもの → (MemberNumが，MemberNumカラムの中で最大値のとき，そのカラムはMemberListにあるよ)」
             self.cursor.execute("SELECT MemberNum FROM MemberList WHERE MemberNum=(SELECT MAX(MemberNum) FROM MemberList)")  # 関数内はSQL文
             newMemberNum = self.cursor.fetchall() + 1  # 取得データ代入
-            
+            print("[  OK  ]: Got most new MemberNum")
             # 新規ユーザデータをデータベースへ入力
             self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, wallet) VALUES ('%d','%s','%s',0)"%(newMemberNum, name, mail)) # 関数内はSQL文 変数はタブタプ
             self.cursor.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
+            print("[  OK  ]: Add new user")
 
         except:
             self.cursor.close()
             self.db.close()
-            print("[ERROR] Database Connection ERROR!\n")
+            print("[ERROR ] Database Connection ERROR!\n")
             return False
         
 temp = Database()
