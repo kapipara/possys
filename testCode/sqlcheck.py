@@ -35,9 +35,9 @@ class Database:
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
             self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
-            print("[   OK  ]: Got Data")
+            print("[   OK  ]: Got IDm Data")
             for i in serverData:
-                if IDm in i:
+                if IDm in serverData(i):
                     return True
                 else:
                     return False
