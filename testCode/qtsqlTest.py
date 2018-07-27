@@ -23,9 +23,8 @@ class Database:
                                           password = config.get('DATABASE','password'),
                                           database = config.get('DATABASE','databaseName')
                                          )
-        # データベース対話クラスのインスタンスを作成
+        # データベースとの，対話クラスのインスタンスを作成
         cursor = db.cursor()
-
 
     def __open(self):
         # データベースが開けなかったときの回避処理
@@ -35,5 +34,8 @@ class Database:
 
     def checkIDm(self, IDm):
         self.__open()
-        query = QtSql.QSqlQuery()
-        query.prepare('SELECT * FROM NFCID WHERE IDm=')
+        # NFCIDテーブルを全件取得
+        # SQLserver側で一致処理してもいいけど変数処理が面倒くさい
+        self.cursor.execute("SELECT * FROM NFCID")
+        serverData = cursor.fetchall()  # 取得データ代入
+        print(serverData)
