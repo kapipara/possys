@@ -43,10 +43,12 @@ class Database:
                     return False
                 
         except:
+            '''
             self.cursor.close()
             self.db.close()
             print("[ERROR ]: Database Connection ERROR!\n")
             return False
+            '''
     
     # ユーザ追加
     def addUser(self):
