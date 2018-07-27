@@ -39,9 +39,7 @@ class Database:
             for i in serverData:
                 if IDm in serverData:
                     return True
-                else:
-                    return False
-                
+            return False
         except:
             '''
             self.cursor.close()
