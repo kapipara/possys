@@ -25,6 +25,7 @@ class Database:
                                               )
         # データベースとの，対話クラスのインスタンスを作成
         self.cursor = self.db.cursor()
+        print("[ OK ] : Establish database connection")
 
     # IDm照合処理
     def checkIDm(self, IDm):
