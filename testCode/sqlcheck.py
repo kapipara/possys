@@ -31,7 +31,7 @@ class Database:
             # NFCIDテーブルを全件取得
             # executeで実行コマンドを指定，fetchallで実データすべてを取得
             self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)
-            serverData = cursor.fetchall()  # 取得データ代入
+            serverData = self.cursor.fetchall()  # 取得データ代入
             return serverData
         finally:
             self.cursor.close()
