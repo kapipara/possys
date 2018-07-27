@@ -29,16 +29,24 @@ class Database:
 
     # IDm照合処理
     def checkIDm(self, IDm):
-        print("[START ]: check NFC IDm...")
-        # NFCIDテーブルから条件付き全件取得
-        # executeで実行コマンドを指定，fetchallで一致データすべてを取得
-        self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)   # 関数内はSQL文
-        serverData = self.cursor.fetchall()  # 取得データ代入
-        print("[  OK  ]: Got IDm Data")
-        for i in serverData:
-            if IDm in serverData:
-                return True
-        return False
+        try:
+            print("[START ]: check NFC IDm...")
+            # NFCIDテーブルから条件付き全件取得
+            # executeで実行コマンドを指定，fetchallで一致データすべてを取得
+            self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%IDm)   # 関数内はSQL文
+            serverData = self.cursor.fetchall()  # 取得データ代入
+            print("[  OK  ]: Got IDm Data")
+            for i in serverData:
+                if IDm in serverData:
+                    return True
+            return False
+        except:
+            '''
+            self.cursor.close()
+            self.db.close()
+            print("[ERROR ]: Database Connection ERROR!\n")
+            return False
+            '''
     
     # ユーザ追加
     def addUser(self):
