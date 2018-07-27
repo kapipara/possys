@@ -13,18 +13,18 @@ import mysql.connector
 class Database:
     def __init__(self):
         # configファイルを参照
-        self.config = configparser.SafeConfigParser()
-        self.config.read('setting.ini')
+        config = configparser.SafeConfigParser()
+        config.read('setting.ini')
 
         # データベースを参照
         # 各値はconfigファイルのDATABASEセクションから取得
-        self.db = self.mysql.connector.connect(host     = self.config.get('DATABASE','hostname'),
-                                               user     = self.config.get('DATABASE','username'),
-                                               password = self.config.get('DATABASE','password'),
-                                               database = self.config.get('DATABASE','databaseName')
+        self.db = self.mysql.connector.connect(host     = config.get('DATABASE','hostname'),
+                                               user     = config.get('DATABASE','username'),
+                                               password = config.get('DATABASE','password'),
+                                               database = config.get('DATABASE','databaseName')
                                               )
         # データベースとの，対話クラスのインスタンスを作成
-        cursor = db.cursor()
+        self.cursor = self.db.cursor()
 
     def __open(self):
         # データベースが開けなかったときの回避処理
