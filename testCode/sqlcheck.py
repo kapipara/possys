@@ -50,19 +50,18 @@ class Database:
             return False
     # ユーザ追加
     def addUser(self):
-        cond = True
-        try:
+            cond = True
             print("[START ]: add User...")
             while cond:
-                print("新規ユーザー登録を行います。\n")
+                print("\n新規ユーザー登録を行います。")
                 print("UserName:")
                 name = input(">> ")
                 print("EmailAddress:")
                 mail = input(">> ")
-                print("Your input data:\n")
+                print("\nYour input data:")
                 print("UserName:" + name)
                 print("EmailAddress:" + mail)
-                print("Confirm? [y/n](nothing default, only [y/n])")
+                print("\nConfirm? [y/n]\n(nothing default, only [y/n])")
                 confirm = None
                 confirm = input(">> ")
                 cond = False
@@ -77,17 +76,14 @@ class Database:
             # MemberListテーブルからMemberNum最大値取得
             # SQL文の意味は，「MemberNumのデータが欲しい，MemberListから，次の条件に一致するもの → (MemberNumが，MemberNumカラムの中で最大値のとき，そのカラムはMemberListにあるよ)」
             self.cursor.execute("SELECT MemberNum FROM MemberList WHERE MemberNum=(SELECT MAX(MemberNum) FROM MemberList)")  # 関数内はSQL文
-            newMemberNum = self.cursor.fetchall() + 1  # 取得データ代入
+            newMemberNum = self.cursor.fetchall()  # 取得データ代入
+            newMemberNum = newMemberNum[0][0] + 1
+            print(newMemberNum)
             print("[  OK  ]: Got most new MemberNum")
             # 新規ユーザデータをデータベースへ入力
             self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, wallet) VALUES ('%d','%s','%s',0)"%(newMemberNum, name, mail)) # 関数内はSQL文 変数はタブタプ
-            self.cursor.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
+            self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
-        except:
-            self.cursor.close()
-            self.db.close()
-            print("[ERROR ] Database Connection ERROR!\n")
-            return False
 temp = Database()
 print(temp.checkIDm("114515ABCDEF1919"))
-# temp.addUser()
+temp.addUser()
