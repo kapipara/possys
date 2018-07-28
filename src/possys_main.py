@@ -97,7 +97,7 @@ class Database:
             return False
 
     # ユーザ追加
-    def addUser(self,Name,mail):
+    def addUser(self,name,mail):
         try:
             print("[START ]: add User...")
                 
