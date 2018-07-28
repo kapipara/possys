@@ -114,7 +114,7 @@ class idmRead:
                 # 「hogehoge\n'」と取得できるので，後ろから3字消去
                 tag = tag[:-3]
                 flag = 0
-                print("[  OK  ]: Got IDm")
+                print("[  OK  ]: Got your cards IDm")
                 return(tag)
             # 「IDm」の後にスペースを置いてIDmが来るようにしてあるので，フラグ付けて次ループで回収
             if tag.find("IDm=") is not -1:
