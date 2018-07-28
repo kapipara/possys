@@ -214,6 +214,7 @@ class mainMenu:
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
                 print("登録済みのNFCカードをタッチしてください。")
+                amount = -int(amount)
                 tag = self.idmRead.getMain()
                 userNum = self.database.checkIDm_userNum(tag)
                 self.database.money(userNum, amount)
