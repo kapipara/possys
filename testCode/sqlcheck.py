@@ -43,13 +43,16 @@ class Database:
                     return True
             except:
                 return False
+
         except:
             self.cursor.close()
             self.db.close()
             print("[ERROR ]: Database Connection ERROR!")
             return False
+            
     # ユーザ追加
     def addUser(self):
+        try:
             cond = True
             print("[START ]: add User...")
             while cond:
@@ -84,6 +87,13 @@ class Database:
             self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, wallet) VALUES ('%d','%s','%s',0)"%(newMemberNum, name, mail)) # 関数内はSQL文 変数はタブタプ
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
+
+        except:
+            self.cursor.close()
+            self.db.close()
+            print("[ERROR ]: Database Connection ERROR!")
+            return False
+
 temp = Database()
 print(temp.checkIDm("114515ABCDEF1919"))
 temp.addUser()
