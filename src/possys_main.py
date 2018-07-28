@@ -99,28 +99,7 @@ class Database:
     # ユーザ追加
     def addUser(self,Name,mail):
         try:
-            cond = True
             print("[START ]: add User...")
-            while cond:
-                print("\n新規ユーザー登録を行います。")
-                print("UserName:")
-                name = input(">> ")
-                print("EmailAddress:")
-                mail = input(">> ")
-                print("\nYour input data:")
-                print("UserName:" + name)
-                print("EmailAddress:" + mail)
-                print("\nConfirm? [y/n]\n(nothing default, only [y/n])")
-                confirm = None
-                confirm = input(">> ")
-                cond = False
-                if(confirm == 'n'):
-                    cond = True
-                elif(confirm == 'y'):
-                    break
-                else:
-                    print("Plz only input y/n or Nothing!!!\n")
-                    cond = True
                 
             # MemberListテーブルからMemberNum最大値取得
             # SQL文の意味は，「MemberNumのデータが欲しい，MemberListから，次の条件に一致するもの → (MemberNumが，MemberNumカラムの中で最大値のとき，そのカラムはMemberListにあるよ)」
@@ -224,7 +203,7 @@ class mainMenu:
 
             # 入金モード
             elif mode == 2:
-                print("※※※ 必ず貯金箱に現金を投入してから処理を行ってください ※※※")
+                print("※※※ 必ず貯金箱に現金を投入してから処理を行ってください！ ※※※")
                 print("入金金額を入力してください...")
                 amount = input(">> ")
                 if not amount.isdigit:
@@ -234,7 +213,32 @@ class mainMenu:
                 userNum = self.database.checkIDm_userNum(tag)
                 self.database.money(userNum, amount)
                 print("ご入金ありがとうございます。データベースが更新されたので安心してください。") 
-            
+
+           # ユーザー登録モード
+            elif mode == 3:
+                print("ようこそ possys へ！")
+                print("ユーザー登録を行います。必要事項を入力してください。")
+                cond = True
+                while cond:
+                    print("UserName:")
+                    name = input(">> ")
+                    print("EmailAddress:")
+                    mail = input(">> ")
+                    print("\nYour input data:")
+                    print("UserName:" + name)
+                    print("EmailAddress:" + mail)
+                    print("\nConfirm? [y/n]\n(nothing default, only [y/n])")
+                    confirm = None
+                    confirm = input(">> ")
+                    cond = False
+                    if(confirm == 'n'):
+                        cond = True
+                    elif(confirm == 'y'):
+                        break
+                    else:
+                        print("Plz only input y/n or Nothing!!!\n")
+                        cond = True
+                self.database.addUser(name,mail)
                     
 temp = mainMenu()
 temp.mainLogic()
