@@ -208,6 +208,8 @@ class mainMenu:
             print("5.NFCカード消去")
             print("6.ユーザー消去")
             mode = int(input(">> "))
+
+            # 購入モード
             if mode == 1:
                 print("購入金額を入力してください...")
                 amount = input(">> ")
@@ -218,7 +220,21 @@ class mainMenu:
                 tag = self.idmRead.getMain()
                 userNum = self.database.checkIDm_userNum(tag)
                 self.database.money(userNum, amount)
+                print("ご購入ありがとうございました。またのご利用をお待ちしております。")
 
+            # 入金モード
+            elif mode == 2:
+                print("※※※ 必ず貯金箱に現金を投入してから処理を行ってください ※※※")
+                print("入金金額を入力してください...")
+                amount = input(">> ")
+                if not amount.isdigit:
+                    print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
+                print("登録済みのNFCカードをタッチしてください。")
+                tag = self.idmRead.getMain()
+                userNum = self.database.checkIDm_userNum(tag)
+                self.database.money(userNum, amount)
+                print("ご入金ありがとうございます。データベースが更新されたので安心してください。") 
+            
                     
 temp = mainMenu()
 temp.mainLogic()
