@@ -138,7 +138,7 @@ class Database:
         print("[  OK  ]: Got user number")
         
         # カードを追加
-        self.cursor.execute("INSERT INTO NFCID (DataNum, MemberNum, IDm) VALUES ('%d','%d','%s')"%(newDataNum,userNum,IDm))
+        self.cursor.execute("INSERT INTO NFCID (DataNum, MemberNum, IDm) VALUES ('%d','%d','%s')"%(newDataNum,userNum,userIDm))
         self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
         print("[  OK  ]: Add new user card")
 
