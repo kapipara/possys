@@ -7,4 +7,5 @@
 	- python-pyside
 
 # pipリスト
+	- mysql-connector-python
 	
