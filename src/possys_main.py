@@ -69,7 +69,7 @@ class Database:
 
     # IDmからユーザを参照する処理 (↑で2変数返せば良くね？とか言わないように)
     def checkIDm_userNum(self,userIDm):
-         try:
+        try:
             print("[START ]: check NFC IDm...")
             # NFCIDテーブルから条件付き全件取得
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
@@ -173,6 +173,7 @@ class idmRead:
 
 class slackLink:
     def __init__(self):
+        pass
 
 class mainMenu:
     def __init__(self):
@@ -189,16 +190,17 @@ class mainMenu:
             print("4.NFCカード登録")
             print("5.NFCカード消去")
             print("6.ユーザー消去")
-            mode = input(">> ")
+            mode = int(input(">> "))
             if mode == 1:
                 print("購入金額を入力してください...")
                 amount = input(">> ")
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
                 print("登録済みのNFCカードをタッチしてください。")
-                tag = idmRead.getMain()
-                userNum = database.checkIDm_userNum(tag)
-                database.money(userNum, amount)
+                tag = self.idmRead.getMain()
+                userNum = self.database.checkIDm_userNum(tag)
+                self.database.money(userNum, amount)
 
                     
-                
+temp = mainMenu()
+temp.mainLogic()
