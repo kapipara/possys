@@ -37,6 +37,7 @@ class Database:
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got IDm Data")
             serverData = [i for i in serverData if IDm is i]
+            print(serverData)
             for i in serverData:
                 if userIDm in serverData:
                     return True
@@ -44,7 +45,7 @@ class Database:
         except:
             self.cursor.close()
             self.db.close()
-            print("[ERROR ]: Database Connection ERROR!\n")
+            print("[ERROR ]: Database Connection ERROR!")
             return False
     
     # ユーザ追加
