@@ -98,6 +98,16 @@ class Database:
             print("[ERROR ]: Database Connection ERROR!")
             return False
 
+class idmRead:
+    def __init__(self):
+        pass
+    
+    def getMain(self):
+        command = "python2 idmRead.py"      # 同一ディレクトリ内のidm取得プログラムをpython2で実行
+        tag = subprocess.check_output(command.split())
+        print(tag)
+
 temp = Database()
+temp2 = idmRead()
 print(temp.checkIDm("114515ABCDEF1919"))
-temp.addUser()
+idmRead.getMain()
