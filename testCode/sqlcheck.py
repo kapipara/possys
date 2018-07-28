@@ -36,8 +36,8 @@ class Database:
             self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got IDm Data")
-            serverData = [i for i in serverData if IDm is i]
-            print(serverData)
+            temp = [i for i in serverData if IDm is i]
+            print(temp)
             for i in serverData:
                 if userIDm in serverData:
                     return True
