@@ -36,16 +36,18 @@ class Database:
             self.cursor.execute("SELECT IDm  FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got IDm Data")
-            print(serverData[0][0])
-            if str(serverData[0][0]) == str(userIDm):
-                return True
-            return False
+            # 重複データがあっても，[0][0]にはとりあえず取得データがある
+            # ない場合，list型の範囲外参照エラーが起きるのでexceptで拾ってあげる
+            try:
+                if str(serverData[0][0]) == str(userIDm):
+                    return True
+            except:
+                return False
         except:
             self.cursor.close()
             self.db.close()
             print("[ERROR ]: Database Connection ERROR!")
             return False
-    '''
     # ユーザ追加
     def addUser(self):
         cond = True
