@@ -148,13 +148,19 @@ class Database:
         print("[  OK  ]: Got current time")
        
         # MoneyLogテーブルからLogNum最大値取得
-        # SQL文の意味は，「LogNumのデータが欲しい，MoneyLogから，次の条件に一致するもの → (LogNumが，LogNumカラムの中で最大値のとき，そのカラムはMoneyLogにあるよ)」
         self.cursor.execute("SELECT LogNum FROM MoneyLog WHERE LogNum=(SELECT MAX(LogNum) FROM MoneyLog)")  # 関数内はSQL文
         newLogNum = self.cursor.fetchall()  # 取得データ代入
         newLogNum = newLogNum[0][0] + 1
-     
-        # 新規ユーザデータをデータベースへ入力
-        self.cursor.execute("INSERT INTO MoneyLog (LogNum, MemberNum, Date, Money) VALUES ('%d','%d','%s','%d')"%(int(newLogNum), int(userNum), now, int(amount))) # 関数内はSQL文 変数はタプタプ
+
+        # MemberListのユーザーのWalletの値を更新
+        self.cursor.execute("SELECT Wallet FROM MemberList WHERE MemberNum=%d"%int(userNum))                            # 関数内はSQL文
+        temp = self.cursor.fetchall()
+        userWallet = int(temp[0][0]) + int(amount)
+        self.cursor.execute("UPDATE MemberList SET Wallet=%d WHERE MemberNum=%d"%(int(userWallet),int(userNum)))        # 関数内はSQL文
+        self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
+
+        # 金銭ログをデータベースへ入力
+        self.cursor.execute("INSERT INTO MoneyLog (LogNum, MemberNum, Date, Money) VALUES ('%d','%d','%s','%d')"%(int(newLogNum), int(userNum), now, int(amount))) # 関数内はSQL文
         self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
         print("[  OK  ]: Update money log")
 
