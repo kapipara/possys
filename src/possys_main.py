@@ -40,6 +40,7 @@ class Database:
                                           password = config.get('DATABASE','password'),
                                           database = config.get('DATABASE','databaseName')
                                          )
+       
         # データベースとの，対話クラスのインスタンスを作成
         self.cursor = self.db.cursor()
         print("[  OK  ]: Establish database connection")
@@ -48,11 +49,13 @@ class Database:
     def checkIDm(self, userIDm):
         try:
             print("[START ]: check NFC IDm...")
+            
             # NFCIDテーブルから条件付き全件取得
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
             self.cursor.execute("SELECT IDm  FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got server side IDm data")
+           
             # 重複データがあっても，[0][0]にはとりあえず取得データがある
             # ない場合，list型の範囲外参照エラーが起きるのでexceptで拾ってあげる
             try:
@@ -70,16 +73,18 @@ class Database:
     # IDmからユーザを参照する処理 (↑で2変数返せば良くね？とか言わないように)
     def checkIDm_userNum(self,userIDm):
         try:
-            print("[START ]: check NFC IDm...")
+            print("[START ]: check NFC IDm and MemberNum...")
+           
             # NFCIDテーブルから条件付き全件取得
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
-            self.cursor.execute("SELECT UserNum FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
+            self.cursor.execute("SELECT MemberNum FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got server side IDm data")
-            # 重複データがあっても，[0][0]にはとりあえず取得データがある
-            # ない場合，list型の範囲外参照エラーが起きるのでexceptで拾ってあげる
+            
+            # データがない場合，list型の範囲外参照エラーが起きるのでexceptで拾ってあげる
             try:
-                # DataNum-UserNum-IDmの順なので，(0,3)にIDm，(0,2)にUserNumがある
+                # DataNum-UserNum-IDmの順なので，(n,3)にIDm，(n,2)にUserNumがある
+                # 一致データがあればどこでもいいので先頭データから取得
                 if (serverData[0][3]) == str(userIDm):
                     return serverData[0][2]
             except:
@@ -123,6 +128,7 @@ class Database:
             newMemberNum = self.cursor.fetchall()  # 取得データ代入
             newMemberNum = newMemberNum[0][0] + 1
             print("[  OK  ]: Got most new MemberNum")
+          
             # 新規ユーザデータをデータベースへ入力
             self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, wallet) VALUES ('%d','%s','%s',0)"%(newMemberNum, name, mail)) # 関数内はSQL文 変数はタブタプ
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
@@ -136,14 +142,17 @@ class Database:
 
     def money(self,userNum,amount):
         print("[START ]: money processing...")
+      
         # 現在時刻取得，iso8601形式に変換
         now = datetime.datetime.now().isoformat()
         print("[  OK  ]: Got current time")
+       
         # MoneyLogテーブルからLogNum最大値取得
         # SQL文の意味は，「LogNumのデータが欲しい，MoneyLogから，次の条件に一致するもの → (LogNumが，LogNumカラムの中で最大値のとき，そのカラムはMoneyLogにあるよ)」
         self.cursor.execute("SELECT LogNum FROM MoneyLog WHERE LogNum=(SELECT MAX(LogNum) FROM MoneyLog)")  # 関数内はSQL文
         newLogNum = self.cursor.fetchall()  # 取得データ代入
         newLogNum = newLogNum[0][0] + 1
+     
         # 新規ユーザデータをデータベースへ入力
         self.cursor.execute("INSERT INTO MoneyLog (LogNum, MemberNum, Date, Money) VALUES ('%d','%d','%s','%d')"%(newLogNum, userNum, now, amount)) # 関数内はSQL文 変数はタブタプ
         self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
@@ -156,9 +165,11 @@ class idmRead:
     def getMain(self):
         print("[START ]: Getting NFC card IDm...")
         command = "python2 idmRead.py"      # 同一ディレクトリ内のidm取得プログラムをpython2で実行
+       
         # サブシステムでcommandを実行，stringに変換してスペースでスプリット
         output = str(subprocess.check_output(command.split()))
         temp = output.split()
+       
         flag = 0
         for tag in temp:
             if flag == 1:
