@@ -104,16 +104,17 @@ class idmRead:
     
     def getMain(self):
         command = "python2 idmRead.py"      # 同一ディレクトリ内のidm取得プログラムをpython2で実行
-        output = subprocess.check_output(command.split())
+        output = str(subprocess.check_output(command.split()))
         print(output)
         temp = output.split()
         flag = 0
         for tag in temp:
             if flag == 1:
+                tag = tag[:-3]
                 print(tag)
                 flag = 0
             # 「IDm」の後にスペースを置いてIDmが来るようにしてあるので，フラグ付けて次ループ回収
-            if item.find("IDm=") is not -1:
+            if tag.find("IDm=") is not -1:
                 flag = 1
 
 temp = Database()
