@@ -280,6 +280,8 @@ class mainMenu:
                 userName = input(">> ")
                 print("続いて，追加したいカードをタッチしてください。")
                 tag = self.idmRead.getMain()
+                self.database.addCard(tag,userName)
+                print("カードのご登録を承りました。只今より当該カードはご利用いただけます。")
 
                 
                     
