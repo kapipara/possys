@@ -135,10 +135,11 @@ class Database:
         # MemberListテーブルから指定ユーザー名のユーザー番号を取得
         self.cursor.execute("SELECT MemberNum FROM MemberList WHERE Name='%s'"%userName)
         userNum = self.cursor.fetchall()    # 取得データ代入
+        userNum = userNum[0][0]
         print("[  OK  ]: Got user number")
         
         # カードを追加
-        self.cursor.execute("INSERT INTO NFCID (DataNum, MemberNum, IDm) VALUES ('%d','%d','%s')"%(int(newDataNum[0][0]),int(userNum),userIDm))
+        self.cursor.execute("INSERT INTO NFCID (DataNum, MemberNum, IDm) VALUES ('%d','%d','%s')"%(int(newDataNum),int(userNum),userIDm))
         self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
         print("[  OK  ]: Add new user card")
 
