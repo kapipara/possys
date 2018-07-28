@@ -13,12 +13,12 @@ class getNFCtag():
     def on_connect(self,tag):
         # String型に変換，イコールとスペースでスプリット
         tmp = str(tag)
-        self.splitOut = tmp.replace('=',' ').split()
+        splitOut = tmp.replace('=',' ').split()
 
         flag = 0
-        for item in self.splitOut:
+        for item in splitOut:
             if flag == 1:
-                print(item)
+                print("[ NFC  ]: IDm= " + item )
                 flag = 0
             # 「ID」の後がIDmなので，フラグを立てて次ループで回収
             if item.find("ID") is not -1:
