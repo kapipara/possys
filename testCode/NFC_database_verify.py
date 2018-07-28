@@ -104,20 +104,23 @@ class idmRead:
     
     def getMain(self):
         command = "python2 idmRead.py"      # 同一ディレクトリ内のidm取得プログラムをpython2で実行
+        # サブシステムでcommandを実行，stringに変換してスペースでスプリット
         output = str(subprocess.check_output(command.split()))
-        print(output)
         temp = output.split()
         flag = 0
         for tag in temp:
             if flag == 1:
+                # 「hogehoge\n'」と取得できるので，後ろから3字消去
                 tag = tag[:-3]
                 print(tag)
+                return(tag)
                 flag = 0
-            # 「IDm」の後にスペースを置いてIDmが来るようにしてあるので，フラグ付けて次ループ回収
+            # 「IDm」の後にスペースを置いてIDmが来るようにしてあるので，フラグ付けて次ループで回収
             if tag.find("IDm=") is not -1:
                 flag = 1
 
 temp = Database()
 temp2 = idmRead()
 print(temp.checkIDm("114515ABCDEF1919"))
+temp2.getMain()
 temp2.getMain()
