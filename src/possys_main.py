@@ -67,6 +67,7 @@ class Database:
         except:
             self.cursor.close()
             self.db.close()
+            print("[ERROR ]: Function checkIDm internal ERROR!")
             print("[ERROR ]: Database Connection ERROR!")
             return False
 
@@ -93,8 +94,9 @@ class Database:
         except:
             self.cursor.close()
             self.db.close()
+            print("[ERROR ]: Function checkIDm_userNum internal ERROR!")
             print("[ERROR ]: Database Connection ERROR!")
-            return False
+            return
 
     # ユーザ追加
     def addUser(self,name,mail):
@@ -106,7 +108,7 @@ class Database:
             self.cursor.execute("SELECT MemberNum FROM MemberList WHERE MemberNum=(SELECT MAX(MemberNum) FROM MemberList)")  # 関数内はSQL文
             newMemberNum = self.cursor.fetchall()  # 取得データ代入
             newMemberNum = newMemberNum[0][0] + 1
-            print("[  OK  ]: Got most new MemberNum")
+            print("[  OK  ]: Got latest userNumber")
           
             # 新規ユーザデータをデータベースへ入力
             self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, wallet) VALUES ('%d','%s','%s',0)"%(newMemberNum, name, mail)) # 関数内はSQL文 変数はタブタプ
@@ -116,32 +118,62 @@ class Database:
         except:
             self.cursor.close()
             self.db.close()
+            print("[ERROR ]: Function addUser internal ERROR!")
+            print("[ERROR ]: Database Connection ERROR!")
+            return
+
+    # NFCカード追加処理
+    def addCard(self,userIDm,userName):
+        print("[START ]: add new NFC card...")
+
+        # NFCIDテーブルからDataNum最大値取得
+        self.cursor.execute("SELECT DataNum FROM NFCID WHERE DataNum=(SELECT MAX(DataNum) FROM NFCID)")  # 関数内はSQL文
+        newDataNum = self.cursor.fetchall()  # 取得データ代入
+        newDataNum = newDataNum[0][0] + 1
+        print("[  OK  ]: Got latest dataNumber")
+        
+        # MemberListテーブルから指定ユーザー名のユーザー番号を取得
+        self.cursor.execute("SELECT MemberNum FROM MemberList WHERE Name='%s'"%userName)
+        userNum = self.cursor.fetchall()    # 取得データ代入
+        print("[  OK  ]: Got user number")
+        
+        # カードを追加
+        self.cursor.execute("INSERT INTO NFCID (DataNum, MemberNum, IDm) VALUES ('%d','%d','%s')"%(newDataNum,userNum,IDm))
+        self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
+        print("[  OK  ]: Add new user card")
+
+    # 金銭処理
+    def money(self,userNum,amount):
+        try:
+            print("[START ]: money processing...")
+
+            # 現在時刻取得，iso8601形式に変換
+            now = datetime.datetime.now().isoformat()
+            print("[  OK  ]: Got current time")
+
+            # MoneyLogテーブルからLogNum最大値取得
+            self.cursor.execute("SELECT LogNum FROM MoneyLog WHERE LogNum=(SELECT MAX(LogNum) FROM MoneyLog)")  # 関数内はSQL文
+            newLogNum = self.cursor.fetchall()  # 取得データ代入
+            newLogNum = newLogNum[0][0] + 1
+
+            # MemberListのユーザーのWalletの値を更新
+            self.cursor.execute("SELECT Wallet FROM MemberList WHERE MemberNum=%d"%int(userNum))                            # 関数内はSQL文
+            temp = self.cursor.fetchall()
+            userWallet = int(temp[0][0]) + int(amount)
+            self.cursor.execute("UPDATE MemberList SET Wallet=%d WHERE MemberNum=%d"%(int(userWallet),int(userNum)))        # 関数内はSQL文
+            self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
+
+            # 金銭ログをデータベースへ入力
+            self.cursor.execute("INSERT INTO MoneyLog (LogNum, MemberNum, Date, Money) VALUES ('%d','%d','%s','%d')"%(int(newLogNum), int(userNum), now, int(amount))) # 関数内はSQL文
+            self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
+            print("[  OK  ]: Update money log")
+
+        except:
+            self.cursor.close()
+            self.db.close()
+            print("[ERROR ]: Function money internal ERROR!")
             print("[ERROR ]: Database Connection ERROR!")
             return False
-
-    def money(self,userNum,amount):
-        print("[START ]: money processing...")
-      
-        # 現在時刻取得，iso8601形式に変換
-        now = datetime.datetime.now().isoformat()
-        print("[  OK  ]: Got current time")
-       
-        # MoneyLogテーブルからLogNum最大値取得
-        self.cursor.execute("SELECT LogNum FROM MoneyLog WHERE LogNum=(SELECT MAX(LogNum) FROM MoneyLog)")  # 関数内はSQL文
-        newLogNum = self.cursor.fetchall()  # 取得データ代入
-        newLogNum = newLogNum[0][0] + 1
-
-        # MemberListのユーザーのWalletの値を更新
-        self.cursor.execute("SELECT Wallet FROM MemberList WHERE MemberNum=%d"%int(userNum))                            # 関数内はSQL文
-        temp = self.cursor.fetchall()
-        userWallet = int(temp[0][0]) + int(amount)
-        self.cursor.execute("UPDATE MemberList SET Wallet=%d WHERE MemberNum=%d"%(int(userWallet),int(userNum)))        # 関数内はSQL文
-        self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
-
-        # 金銭ログをデータベースへ入力
-        self.cursor.execute("INSERT INTO MoneyLog (LogNum, MemberNum, Date, Money) VALUES ('%d','%d','%s','%d')"%(int(newLogNum), int(userNum), now, int(amount))) # 関数内はSQL文
-        self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
-        print("[  OK  ]: Update money log")
 
 class idmRead:
     def __init__(self):
@@ -214,20 +246,20 @@ class mainMenu:
                 self.database.money(userNum, amount)
                 print("ご入金ありがとうございます。データベースが更新されたので安心してください。") 
 
-           # ユーザー登録モード
+            # ユーザー登録モード
             elif mode == 3:
                 print("ようこそ possys へ！")
-                print("ユーザー登録を行います。必要事項を入力してください。")
+                print("ユーザー登録を行います。必要事項を入力してください。\n")
                 cond = True
                 while cond:
                     print("UserName:")
                     name = input(">> ")
                     print("EmailAddress:")
                     mail = input(">> ")
-                    print("\nYour input data:")
+                    print("\nあなたが入力したデータは以下の通りです。")
                     print("UserName:" + name)
                     print("EmailAddress:" + mail)
-                    print("\nConfirm? [y/n]\n(nothing default, only [y/n])")
+                    print("\nよろしいですか？ [y/n]\n(nothing default, only [y/n])")
                     confirm = None
                     confirm = input(">> ")
                     cond = False
@@ -239,6 +271,17 @@ class mainMenu:
                         print("Plz only input y/n or Nothing!!!\n")
                         cond = True
                 self.database.addUser(name,mail)
+                print("ご登録ありがとうございます。続いてカード登録を行ってください。")
+            
+            # NFCカード追加モード
+            elif mode == 4:
+                print("新規カード登録処理を行います。")
+                print("あなたのユーザー名を入力してください。")
+                userName = input(">> ")
+                print("続いて，追加したいカードをタッチしてください。")
+                tag = self.idmRead.getMain()
+
+                
                     
 temp = mainMenu()
 temp.mainLogic()
