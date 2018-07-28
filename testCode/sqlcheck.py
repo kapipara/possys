@@ -33,21 +33,19 @@ class Database:
             print("[START ]: check NFC IDm...")
             # NFCIDテーブルから条件付き全件取得
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
-            self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
+            self.cursor.execute("SELECT IDm  FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got IDm Data")
-            serverData = [i for i in serverData if userIDm is i]
-            print(serverData)
-            for i in serverData:
-                if userIDm is i :
-                    return True
+            print(serverData[0][0])
+            if str(serverData[0][0]) == str(userIDm):
+                return True
             return False
         except:
             self.cursor.close()
             self.db.close()
             print("[ERROR ]: Database Connection ERROR!")
             return False
-    
+    '''
     # ユーザ追加
     def addUser(self):
         cond = True
@@ -88,6 +86,7 @@ class Database:
             self.db.close()
             print("[ERROR ] Database Connection ERROR!\n")
             return False
+    '''
 temp = Database()
 print(temp.checkIDm("114514ABCDEF1919"))
-temp.addUser()
+# temp.addUser()
