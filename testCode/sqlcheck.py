@@ -36,17 +36,16 @@ class Database:
             self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got IDm Data")
+            serverData = [i for i in serverData if IDm is i]
             for i in serverData:
                 if userIDm in serverData:
                     return True
             return False
         except:
-            '''
             self.cursor.close()
             self.db.close()
             print("[ERROR ]: Database Connection ERROR!\n")
             return False
-            '''
     
     # ユーザ追加
     def addUser(self):
@@ -83,13 +82,11 @@ class Database:
             self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, wallet) VALUES ('%d','%s','%s',0)"%(newMemberNum, name, mail)) # 関数内はSQL文 変数はタブタプ
             self.cursor.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
-        '''
         except:
             self.cursor.close()
             self.db.close()
             print("[ERROR ] Database Connection ERROR!\n")
             return False
-        '''
 temp = Database()
 print(temp.checkIDm("114514ABCDEF1919"))
 temp.addUser()
