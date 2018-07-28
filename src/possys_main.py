@@ -124,24 +124,33 @@ class Database:
 
     # NFCカード追加処理
     def addCard(self,userIDm,userName):
-        print("[START ]: add new NFC card...")
+        try:
+            print("[START ]: add new NFC card...")
 
-        # NFCIDテーブルからDataNum最大値取得
-        self.cursor.execute("SELECT DataNum FROM NFCID WHERE DataNum=(SELECT MAX(DataNum) FROM NFCID)")  # 関数内はSQL文
-        newDataNum = self.cursor.fetchall()  # 取得データ代入
-        newDataNum = newDataNum[0][0] + 1
-        print("[  OK  ]: Got latest dataNumber")
-        
-        # MemberListテーブルから指定ユーザー名のユーザー番号を取得
-        self.cursor.execute("SELECT MemberNum FROM MemberList WHERE Name='%s'"%userName)
-        userNum = self.cursor.fetchall()    # 取得データ代入
-        userNum = userNum[0][0]
-        print("[  OK  ]: Got user number")
-        
-        # カードを追加
-        self.cursor.execute("INSERT INTO NFCID (DataNum, MemberNum, IDm) VALUES ('%d','%d','%s')"%(int(newDataNum),int(userNum),userIDm))
-        self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
-        print("[  OK  ]: Add new user card")
+            # NFCIDテーブルからDataNum最大値取得
+            self.cursor.execute("SELECT DataNum FROM NFCID WHERE DataNum=(SELECT MAX(DataNum) FROM NFCID)")  # 関数内はSQL文
+            newDataNum = self.cursor.fetchall()  # 取得データ代入
+            newDataNum = newDataNum[0][0] + 1
+            print("[  OK  ]: Got latest dataNumber")
+
+            # MemberListテーブルから指定ユーザー名のユーザー番号を取得
+            self.cursor.execute("SELECT MemberNum FROM MemberList WHERE Name='%s'"%userName)
+            userNum = self.cursor.fetchall()    # 取得データ代入
+            userNum = userNum[0][0]
+            print("[  OK  ]: Got user number")
+
+            # カードを追加
+            self.cursor.execute("INSERT INTO NFCID (DataNum, MemberNum, IDm) VALUES ('%d','%d','%s')"%(int(newDataNum),int(userNum),userIDm))
+            self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
+            print("[  OK  ]: Add new user card")
+
+        except:
+           self.cursor.close()
+           self.db.close()
+           print("[ERROR ]: Function addCard internal ERROR!")
+           print("[ERROR ]: Database Connection ERROR!")
+           print("ユーザー名が異なっているか，未登録です。ご確認の上再度お試しください。")
+           return 
 
     # 金銭処理
     def money(self,userNum,amount):
@@ -284,7 +293,22 @@ class mainMenu:
                 self.database.addCard(tag,userName)
                 print("カードのご登録を承りました。只今より当該カードはご利用いただけます。")
 
-                
-                    
-temp = mainMenu()
-temp.mainLogic()
+            # NFCカード消去モード
+            elif mode == 5:
+                print("当機能は未実装です。管理者へ問い合わせてください。")
+
+            # ユーザー消去モード
+            elif mode == 6:    
+                print("当機能は未実装です。管理者へ問い合わせてください。")
+
+            # 変な値を入力されたとき
+            else:
+                print("1~6までの数値を入力してください。")
+            
+            print("\n")
+
+try:
+    temp = mainMenu()
+    temp.mainLogic()
+except:
+    print("[ERROR ]: Serious ERROR!!")
