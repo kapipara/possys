@@ -154,7 +154,7 @@ class Database:
         newLogNum = newLogNum[0][0] + 1
      
         # 新規ユーザデータをデータベースへ入力
-        self.cursor.execute("INSERT INTO MoneyLog (LogNum, MemberNum, Date, Money) VALUES ('%d','%d','%s','%d')"%(newLogNum, userNum, now, amount)) # 関数内はSQL文 変数はタブタプ
+        self.cursor.execute("INSERT INTO MoneyLog (LogNum, MemberNum, Date, Money) VALUES ('%d','%d','%s','%d')"%(int(newLogNum), int(userNum), now, int(amount))) # 関数内はSQL文 変数はタプタプ
         self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
         print("[  OK  ]: Update money log")
 
