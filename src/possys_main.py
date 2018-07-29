@@ -24,6 +24,7 @@ import mysql.connector
 import subprocess
 # ユーザーパスワードのハッシュ用
 import hashlib
+import getpass
 
 import os
 import sys
@@ -101,7 +102,7 @@ class Database:
             return
 
     # ユーザ追加
-    def addUser(self,name,mail,hash):
+    def addUser(self,name,mail,hashcode):
         try:
             print("[START ]: add User...")
                 
@@ -113,7 +114,7 @@ class Database:
             print("[  OK  ]: Got latest userNumber")
           
             # 新規ユーザデータをデータベースへ入力
-            self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, PASSWORD, wallet) VALUES ('%d','%s','%s','%s',0)"%(newMemberNum, name, mail, hash)) # 関数内はSQL文 変数はタブタプ
+            self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, PASSWORD, wallet) VALUES ('%d','%s','%s','%s',0)"%(newMemberNum, name, mail, str(hashcode))) # 関数内はSQL文 変数はタブタプ
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
 
@@ -125,7 +126,7 @@ class Database:
             return
 
     # NFCカード追加処理
-    def addCard(self,userIDm,userName):
+    def addCard(self,userIDm,userName,hashcode):
         try:
             print("[START ]: add new NFC card...")
 
@@ -136,10 +137,25 @@ class Database:
             print("[  OK  ]: Got latest dataNumber")
 
             # MemberListテーブルから指定ユーザー名のユーザー番号を取得
-            self.cursor.execute("SELECT MemberNum FROM MemberList WHERE Name='%s'"%userName)
-            userNum = self.cursor.fetchall()    # 取得データ代入
-            userNum = userNum[0][0]
-            print("[  OK  ]: Got user number")
+            try:
+                self.cursor.execute("SELECT MemberNum FROM MemberList WHERE Name='%s'"%userName)
+                userNum = self.cursor.fetchall()    # 取得データ代入
+                userNum = userNum[0][0]
+                print("[  OK  ]: Got user number")
+            except:
+                print("ユーザー名が異なっているか，未登録です。ご確認の上，再度お試しください。")
+                raise
+
+            # MemberListテーブルから指定ユーザー名のハッシュフレーズを取得
+            try:
+                self.cursor.execute("SELECT PASSWORD FROM MemberList WHERE PASSWORD='%s'"%str(hashcode))
+                serverHash = self.cursor.fetchall()     # 取得データ代入
+                if hashcode != serverHash[0][0]:
+                    raise
+                print("[  OK  ]: Got server passphrase")
+            except:
+                print("パスワードが間違っています。ご確認の上，再度お試しください。")
+                raise
 
             # カードを追加
             self.cursor.execute("INSERT INTO NFCID (DataNum, MemberNum, IDm) VALUES ('%d','%d','%s')"%(int(newDataNum),int(userNum),userIDm))
@@ -270,15 +286,14 @@ class mainMenu:
                     name = input(">> ")
                     print("EmailAddress:")
                     mail = input(">> ")
+                    # パスワードのハッシュ処理
                     while passcond:
                         hashman1 = hashlib.sha256()
                         hashman2 = hashlib.sha256()
-                        print("Password:")
-                        password1 = input(">> ").encode('utf-8')
-                        hash1 = hashman1.update(password1)
-                        print("Password (Please again):")
-                        password2 = input(">> ").encode('utf-8')
-                        hash2 = hashman2.update(password2)
+                        hashman1.update(getpass.getpass().encode('utf-8'))
+                        hash1 = hashman1.hexdigest()
+                        hashman2.update(getpass.getpass("Password (Plese agein):").encode('utf-8'))
+                        hash2 = hashman2.hexdigest()
                         passcond = False
                         if hash1 != hash2:
                             print("入力されたパスワードが一致しません。もう一度入力してください。")
@@ -293,6 +308,7 @@ class mainMenu:
                     cond = False
                     if(confirm == 'n'):
                         cond = True
+                        passcond = True
                     elif(confirm == 'y'):
                         break
                     else:
@@ -303,12 +319,16 @@ class mainMenu:
             
             # NFCカード追加モード
             elif mode == 4:
+                hashman = hashlib.sha256()
                 print("新規カード登録処理を行います。")
                 print("あなたのユーザー名を入力してください。")
                 userName = input(">> ")
+                print("あなたのパスワードを入力してください。")
+                hashman.update(getpass.getpass().encode('utf-8'))
+                hashcode = hashman.hexdigest()
                 print("続いて，追加したいカードをタッチしてください。")
                 tag = self.idmRead.getMain()
-                self.database.addCard(tag,userName)
+                self.database.addCard(tag,userName,hashcode)
                 print("カードのご登録を承りました。只今より当該カードはご利用いただけます。")
 
             # NFCカード消去モード
