@@ -24,6 +24,7 @@ import mysql.connector
 import subprocess
 # ユーザーパスワードのハッシュ用
 import hashlib
+import getpass
 
 import os
 import sys
@@ -101,7 +102,7 @@ class Database:
             return
 
     # ユーザ追加
-    def addUser(self,name,mail,hash):
+    def addUser(self,name,mail,hashcode):
         try:
             print("[START ]: add User...")
                 
@@ -113,7 +114,7 @@ class Database:
             print("[  OK  ]: Got latest userNumber")
           
             # 新規ユーザデータをデータベースへ入力
-            self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, PASSWORD, wallet) VALUES ('%d','%s','%s','%s',0)"%(newMemberNum, name, mail, hash)) # 関数内はSQL文 変数はタブタプ
+            self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, PASSWORD, wallet) VALUES ('%d','%s','%s','%s',0)"%(newMemberNum, name, mail, str(hashcode))) # 関数内はSQL文 変数はタブタプ
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
 
@@ -219,6 +220,7 @@ class mainMenu:
     def __init__(self):
         self.database = Database()
         self.idmRead = idmRead()
+        self.getpass = getpass.getpass()
     
     def mainLogic(self):
         while True:
@@ -273,11 +275,11 @@ class mainMenu:
                     while passcond:
                         hashman1 = hashlib.sha256()
                         hashman2 = hashlib.sha256()
-                        print("Password:")
-                        password1 = input(">> ").encode('utf-8')
+                        # print("Password:")
+                        password1 = self.getpass(">> ").encode('utf-8')
                         hash1 = hashman1.update(password1)
-                        print("Password (Please again):")
-                        password2 = input(">> ").encode('utf-8')
+                        # print("Password (Please again):")
+                        password2 = self.getpass(">> ").encode('utf-8')
                         hash2 = hashman2.update(password2)
                         passcond = False
                         if hash1 != hash2:
