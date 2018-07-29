@@ -5,6 +5,7 @@
         - MemberNum smallInt(4) not NULL Unsigned ZEROFILL
         - Name varchar(255) not NULL
         - Email varchar(255)
+        - PASSWORD varchar(64)
         - wallet INT not NULL
         - primary key(DataNum)
     - NFCID
