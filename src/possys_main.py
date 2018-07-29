@@ -22,6 +22,8 @@ import datetime
 import mysql.connector
 # IDm取得用のライブラリ(Python2をサブプロセスで実行)
 import subprocess
+# ユーザーパスワードのハッシュ用
+import hashlib
 
 import os
 import sys
@@ -99,7 +101,7 @@ class Database:
             return
 
     # ユーザ追加
-    def addUser(self,name,mail):
+    def addUser(self,name,mail,hash):
         try:
             print("[START ]: add User...")
                 
@@ -111,7 +113,7 @@ class Database:
             print("[  OK  ]: Got latest userNumber")
           
             # 新規ユーザデータをデータベースへ入力
-            self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, wallet) VALUES ('%d','%s','%s',0)"%(newMemberNum, name, mail)) # 関数内はSQL文 変数はタブタプ
+            self.cursor.execute("INSERT INTO MemberList (MemberNum, Name, Email, PASSWORD, wallet) VALUES ('%d','%s','%s','%s',0)"%(newMemberNum, name, mail, hash)) # 関数内はSQL文 変数はタブタプ
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
 
@@ -260,15 +262,31 @@ class mainMenu:
             elif mode == 3:
                 print("ようこそ possys へ！")
                 print("ユーザー登録を行います。必要事項を入力してください。\n")
+                print("パスワードは入力後にSHA256でハッシュされ，データベースに送信されます。\n")
                 cond = True
+                passcond = True
                 while cond:
                     print("UserName:")
                     name = input(">> ")
                     print("EmailAddress:")
                     mail = input(">> ")
+                    while passcond:
+                        hashman1 = hashlib.sha256()
+                        hashman2 = hashlib.sha256()
+                        print("Password:")
+                        password1 = input(">> ").encode('utf-8')
+                        hash1 = hashman1.update(password1)
+                        print("Password (Please again):")
+                        password2 = input(">> ").encode('utf-8')
+                        hash2 = hashman2.update(password2)
+                        passcond = False
+                        if hash1 != hash2:
+                            print("入力されたパスワードが一致しません。もう一度入力してください。")
+                            passcond = True
                     print("\nあなたが入力したデータは以下の通りです。")
-                    print("UserName:" + name)
-                    print("EmailAddress:" + mail)
+                    print("UserName : " + name)
+                    print("EmailAddress : " + mail)
+                    print("Password : ハッシュされたため表示しません。")
                     print("\nよろしいですか？ [y/n]\n(nothing default, only [y/n])")
                     confirm = None
                     confirm = input(">> ")
@@ -280,7 +298,7 @@ class mainMenu:
                     else:
                         print("Plz only input y/n or Nothing!!!\n")
                         cond = True
-                self.database.addUser(name,mail)
+                self.database.addUser(name,mail,hash1)
                 print("ご登録ありがとうございます。続いてカード登録を行ってください。")
             
             # NFCカード追加モード
