@@ -148,7 +148,7 @@ class Database:
 
             # MemberListテーブルから指定ユーザー名のハッシュフレーズを取得
             try:
-                self.cursor.execute("SELECT PASSWORD FROM MemberList WHERE PASSWORD='%s'"%hashcode)
+                self.cursor.execute("SELECT PASSWORD FROM MemberList WHERE PASSWORD='%s'"%str(hashcode))
                 serverHash = self.cursor.fetchall()     # 取得データ代入
                 if hashcode != serverHash[0][0]:
                     raise
