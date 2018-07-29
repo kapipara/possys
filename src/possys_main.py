@@ -148,8 +148,9 @@ class Database:
 
             # MemberListテーブルから指定ユーザー名のハッシュフレーズを取得
             try:
-                self.cursor.execute("SELECT MemberNum FROM MemberList WHERE PASSWORD='%s'"%hashcode)
+                self.cursor.execute("SELECT PASSWORD FROM MemberList WHERE PASSWORD='%s'"%str(hashcode))
                 serverHash = self.cursor.fetchall()     # 取得データ代入
+                print(str(serverHash[0][0]))
                 if hashcode != serverHash[0][0]:
                     raise
                 print("[  OK  ]: Got server passphrase")
@@ -326,6 +327,7 @@ class mainMenu:
                 print("あなたのパスワードを入力してください。")
                 hashman.update(getpass.getpass().encode('utf-8'))
                 hashcode = hashman.hexdigest()
+                print(hashcode)
                 print("続いて，追加したいカードをタッチしてください。")
                 tag = self.idmRead.getMain()
                 self.database.addCard(tag,userName,hashcode)
