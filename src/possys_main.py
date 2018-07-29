@@ -220,7 +220,6 @@ class mainMenu:
     def __init__(self):
         self.database = Database()
         self.idmRead = idmRead()
-        self.getpass = getpass.getpass()
     
     def mainLogic(self):
         while True:
@@ -275,12 +274,12 @@ class mainMenu:
                     while passcond:
                         hashman1 = hashlib.sha256()
                         hashman2 = hashlib.sha256()
-                        # print("Password:")
-                        password1 = self.getpass(">> ").encode('utf-8')
-                        hash1 = hashman1.update(password1)
-                        # print("Password (Please again):")
-                        password2 = self.getpass(">> ").encode('utf-8')
-                        hash2 = hashman2.update(password2)
+                        password1 = getpass.getpass().encode('utf-8')
+                        hashman1.update(password1)
+                        hash1 = hashman1.hexdigest()
+                        password2 = getpass.getpass("Password (Plese agein):").encode('utf-8')
+                        hashman2.update(password2)
+                        hash2 = hashman2.hexdigest()
                         passcond = False
                         if hash1 != hash2:
                             print("入力されたパスワードが一致しません。もう一度入力してください。")
@@ -295,6 +294,7 @@ class mainMenu:
                     cond = False
                     if(confirm == 'n'):
                         cond = True
+                        passcond = True
                     elif(confirm == 'y'):
                         break
                     else:
