@@ -212,7 +212,7 @@ class Database:
         userNum = self.checkIDm_userNum(IDm)
 
         # ユーザ番号の該当者の残高を取得
-        self.cursor.execute("SELECT Wallet FROM MemberList WHERE MemberNum=%d"%userNum)
+        self.cursor.execute("SELECT wallet FROM MemberList WHERE MemberNum=%d"%userNum)
         wallet = self.cursor.fetchall()
         wallet = int(wallet[0][0])
         return wallet
