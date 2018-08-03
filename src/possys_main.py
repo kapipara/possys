@@ -213,6 +213,7 @@ class Database:
 
         # ユーザ番号の該当者の残高を取得
         self.cursor.execute("SELECT wallet FROM MemberList WHERE MemberNum=%d"%userNum)
+        print("[  OK  ]: Got wallet data")
         wallet = self.cursor.fetchall()
         wallet = int(wallet[0][0])
         return wallet
@@ -261,14 +262,15 @@ class mainMenu:
             print("6.NFCカード消去")
             print("7.ユーザー消去")
             print("select mode:")
-            mode = int(input(">> "))
+            mode = input(">> ")
 
             # 購入モード
             if mode == 1:
                 print("購入金額を入力してください...")
-                amount = input(">> ")
+                amount = str(input(">> "))
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
+                    break
                 print("登録済みのNFCカードをタッチしてください。")
                 amount = -int(amount)
                 tag = self.idmRead.getMain()
@@ -280,20 +282,23 @@ class mainMenu:
             elif mode == 2:
                 print("※※※ 必ず貯金箱に現金を投入してから処理を行ってください！ ※※※")
                 print("入金金額を入力してください...")
-                amount = input(">> ")
+                amount = str(input(">> "))
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
+                    break
                 print("登録済みのNFCカードをタッチしてください。")
                 tag = self.idmRead.getMain()
                 userNum = self.database.checkIDm_userNum(tag)
                 self.database.money(userNum, amount)
-                print("ご入金ありがとうございます。データベースが更新されました。") 
+                print("\nご入金ありがとうございます。データベースが更新されました。") 
 
             # 残高照会モード
             elif mode == 3:
                 print("残高照会を行います。")
-                wallet = self.database.checkWallet()
-                print("あなたの残高は %d 円です。"%wallet)
+                print("NFCカードを置いてください。")
+                tag = self.idmRead.getMain()
+                wallet = self.database.checkWallet(tag)
+                print("\nあなたの残高は %d 円です。"%wallet)
                 if wallet < 0:
                     print("※※※ あなたは借金しています。 ※※※")
                     print("会計から任意のタイミングで徴収されても，返金できる額にとどめてください。")
@@ -339,7 +344,7 @@ class mainMenu:
                         print("Plz only input y/n or Nothing!!!\n")
                         cond = True
                 self.database.addUser(name,mail,hash1)
-                print("ご登録ありがとうございます。続いてカード登録を行ってください。")
+                print("\nご登録ありがとうございます。続いてカード登録を行ってください。")
             
             # NFCカード追加モード
             elif mode == 5:
@@ -353,7 +358,7 @@ class mainMenu:
                 print("続いて，追加したいカードをタッチしてください。")
                 tag = self.idmRead.getMain()
                 self.database.addCard(tag,userName,hashcode)
-                print("カードのご登録を承りました。只今より当該カードはご利用いただけます。")
+                print("\nカードのご登録を承りました。只今より当該カードはご利用いただけます。")
 
             # NFCカード消去モード
             elif mode == 6:
@@ -369,8 +374,8 @@ class mainMenu:
             
             print("\n")
 
-try:
-    temp = mainMenu()
-    temp.mainLogic()
-except:
-    print("[ERROR ]: Serious ERROR!!")
+#try:
+temp = mainMenu()
+temp.mainLogic()
+#except:
+    #print("[ERROR ]: Serious ERROR!!")
