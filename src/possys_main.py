@@ -254,6 +254,7 @@ class mainMenu:
     def mainLogic(self):
         while True:
             print("***** Welcom to possys ! *****")
+            print("Made by kapipara 2018/08/03 released ver2.1")
             print("1.購入")
             print("2.入金")
             print("3.残高照会")
