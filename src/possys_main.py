@@ -339,7 +339,7 @@ class mainMenu:
             mode = input(">> ")
 
             # 購入モード
-            if mode == 1:
+            if mode == '1':
                 print("購入金額を入力してください...")
                 amount = str(input(">> "))
                 if not amount.isdigit:
@@ -353,7 +353,7 @@ class mainMenu:
                 print("ご購入ありがとうございました。またのご利用をお待ちしております。")
 
             # 入金モード
-            elif mode == 2:
+            elif mode == '2':
                 print("※※※ 必ず貯金箱に現金を投入してから処理を行ってください！ ※※※")
                 print("入金金額を入力してください...")
                 amount = str(input(">> "))
@@ -367,7 +367,7 @@ class mainMenu:
                 print("\nご入金ありがとうございます。データベースが更新されました。") 
 
             # 残高照会モード
-            elif mode == 3:
+            elif mode == '3':
                 print("残高照会を行います。")
                 print("NFCカードを置いてください。")
                 tag = self.idmRead.getMain()
@@ -378,7 +378,7 @@ class mainMenu:
                     print("会計から任意のタイミングで徴収されても，返金できる額にとどめてください。")
 
             # ユーザー登録モード
-            elif mode == 4:
+            elif mode == '4':
                 print("ようこそ possys へ！")
                 print("ユーザー登録を行います。必要事項を入力してください。\n")
                 print("パスワードは入力後にSHA256でハッシュされ，データベースに送信されます。\n")
@@ -421,7 +421,7 @@ class mainMenu:
                 print("\nご登録ありがとうございます。続いてカード登録を行ってください。")
             
             # NFCカード追加モード
-            elif mode == 5:
+            elif mode == '5':
                 hashman = hashlib.sha256()
                 print("新規カード登録処理を行います。")
                 print("あなたのユーザー名を入力してください。")
@@ -435,16 +435,16 @@ class mainMenu:
                 print("\nカードのご登録を承りました。只今より当該カードはご利用いただけます。")
 
             # NFCカード消去モード
-            elif mode == 6:
+            elif mode == '6':
                 print("当機能は未実装です。管理者へ問い合わせてください。")
 
             # ユーザー消去モード
-            elif mode == 7:    
+            elif mode == '7':    
                 print("当機能は未実装です。管理者へ問い合わせてください。")
 
             # 変な値を入力されたとき
             else:
-                print("1~6までの数値を入力してください。")
+                print("1~7までの数値を入力してください。")
             
             print("\n")
 
