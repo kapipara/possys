@@ -8,4 +8,5 @@
 
 # pipリスト
 	- mysql-connector-python
+	- slackweb
 	
