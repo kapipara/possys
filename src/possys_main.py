@@ -25,6 +25,8 @@ import subprocess
 # ユーザーパスワードのハッシュ用
 import hashlib
 import getpass
+# Slack接続用
+import slackweb
 
 import os
 import sys
