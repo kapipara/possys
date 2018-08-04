@@ -124,7 +124,7 @@ class Database:
             print("[  OK  ]: Add new user")
 
             # ログ送信
-            self.slack.post(2,self.getUserLog)
+            self.slack.post(2,self.getUserLog())
 
         except:
             self.cursor.close()
@@ -171,7 +171,7 @@ class Database:
             print("[  OK  ]: Add new user card")
 
             # ログ送信
-            self.slack.post(3,self.getNFCLog)
+            self.slack.post(3,self.getNFCLog())
 
         except:
            self.cursor.close()
@@ -185,7 +185,6 @@ class Database:
     def money(self,userNum,amount):
         try:
             print("[START ]: money processing...")
-            print(amount)
 
             # 現在時刻取得，iso8601形式に変換
             now = datetime.datetime.now().isoformat()
@@ -209,7 +208,7 @@ class Database:
             print("[  OK  ]: Update money log")
 
             # ログ送信
-            self.slack.post(1,self.getMoneyLog)
+            self.slack.post(1,self.getMoneyLog())
 
 
         except:
