@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Python36_64\\python.exe",
+    "python.pythonPath": "C:\\free\\Python\\python.exe",
     "python.formatting.provider": "black",
     "python.linting.pylintEnabled": false
 }

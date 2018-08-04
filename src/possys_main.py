@@ -48,6 +48,9 @@ class Database:
         self.cursor = self.db.cursor()
         print("[  OK  ]: Establish database connection")
 
+        # Slack接続クラスのインスタンスを作成
+        self.slack = slackLink()
+
     # IDm照合処理
     def checkIDm(self, userIDm):
         try:
@@ -118,6 +121,9 @@ class Database:
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
 
+            # ログ送信
+            self.slack.post(2,self.getUserLog)
+
         except:
             self.cursor.close()
             self.db.close()
@@ -162,6 +168,9 @@ class Database:
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user card")
 
+            # ログ送信
+            self.slack.post(3,self.getNFCLog)
+
         except:
            self.cursor.close()
            self.db.close()
@@ -197,6 +206,10 @@ class Database:
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Update money log")
 
+            # ログ送信
+            self.slack.post(1,self.getMoneyLog)
+
+
         except:
             self.cursor.close()
             self.db.close()
@@ -217,6 +230,42 @@ class Database:
         wallet = self.cursor.fetchall()
         wallet = int(wallet[0][0])
         return wallet
+    
+    # 決済ログ取得
+    def getMoneyLog(self):
+        print("[START ]: Getting money log data...")
+
+        # ユーザー名付きでログ情報取得
+        # メンバー番号，メンバー名，決済時タイムスタンプ，決済額を取得(リスト型で返される)
+        self.cursor.execute("SELECT MemberList.MemberNum, MemberList.Name, MoneyLog.Data, MoneyLog.Money FROM MemberList, MoneyLog WHERE MoneyLog.MemberNum=MemberList.MemberNum AND MoneyLog.LogNum=(SELECT MAX(LogNum) FROM MoneyLog)")
+        logData = self.cursor.fetchall()
+        print("[  OK  ]: Got money log")
+
+        return logData
+    
+    # ユーザーログ取得
+    def getUserLog(self):
+        print("[START ]: Getting user log data...")
+
+        # ユーザーの追加情報を取得
+        # ユーザー番号，メンバー名を取得
+        self.cursor.execute("SELECT MemberNum,Name FROM MemberList WHERE MemberNum=(SELECT MAX(MemberNum) FROM MemberList)")
+        logData = self.cursor.fetchall()
+        print("[  OK  ]: Got user log")
+
+        return logData
+    
+    # NFCカード追加ログ取得
+    def getNFCLog(self):
+        print("[START ]: Getting NFC log data...")
+
+        # NFCカードの追加情報を取得
+        # ユーザー番号，ユーザー名，カード番号を取得
+        self.cursor.execute("SELECT MemberList.MemberNum, MemberList.Name, NFCID.DataNum FROM MemberList, NFCID WHERE MemberList.MemberNum=NFCID.MemberNum AND NFCID.DataNum=(SELECT MAX(NFCID.DataNum) FROM NFCID) ")
+        logData = self.cursor.fetchall()
+        print("[  OK  ]: Got NFC log")
+
+        return logData
 
 class idmRead:
     def __init__(self):
@@ -244,7 +293,29 @@ class idmRead:
 
 class slackLink:
     def __init__(self):
-        pass
+        # configファイルを参照
+        config = configparser.SafeConfigParser()
+        config.read('setting.ini')
+
+        # Slackのpossys_logチャンネルに接続
+        self.slack = slackweb.Slack(url=config.get('SLACK','url'))
+
+    def post(self, mode, logData):
+        # 金銭ログの場合
+        if mode == 1:
+            self.slack.notify(text=("[決済] : %d%s さんが %d 円決済しました。")%(int(logData[0][0]), str(logData[0][1]), int(logData[0][2])))
+        
+        # ユーザーログの場合
+        elif mode == 2:
+            self.slack.notify(text=("[ユーザー追加] : ユーザー番号[%d]に %s さんが登録されました。")%(int(logData[0][0]), str(logData[0][1])))
+        
+        # NFCカード追加ログの場合
+        elif mode == 3:
+            self.slack.notify(text=("[カード追加] : %d%s さんに カード番号[%d] の　NFCカードを追加しました。")%(int(logData[0][0]), str(logData[0][1]), int(logData[0][2])))
+        
+        # それ以外
+        else:
+            pass
 
 class mainMenu:
     def __init__(self):
