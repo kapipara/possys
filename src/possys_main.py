@@ -238,7 +238,7 @@ class Database:
 
         # ユーザー名付きでログ情報取得
         # メンバー番号，メンバー名，決済時タイムスタンプ，決済額を取得(リスト型で返される)
-        self.cursor.execute("SELECT MemberList.MemberNum, MemberList.Name, MoneyLog.Data, MoneyLog.Money FROM MemberList, MoneyLog WHERE MoneyLog.MemberNum=MemberList.MemberNum AND MoneyLog.LogNum=(SELECT MAX(LogNum) FROM MoneyLog)")
+        self.cursor.execute("SELECT MemberList.MemberNum, MemberList.Name, MoneyLog.Date, MoneyLog.Money FROM MemberList, MoneyLog WHERE MoneyLog.MemberNum=MemberList.MemberNum AND MoneyLog.LogNum=(SELECT MAX(LogNum) FROM MoneyLog)")
         logData = self.cursor.fetchall()
         print("[  OK  ]: Got money log")
 
@@ -304,7 +304,7 @@ class slackLink:
     def post(self, mode, logData):
         # 金銭ログの場合
         if mode == 1:
-            self.slack.notify(text=("[決済] : %d%s さんが %d 円決済しました。")%(int(logData[0][0]), str(logData[0][1]), int(logData[0][2])))
+            self.slack.notify(text=("[決済] : [%d]%s さんが [%s] に %d 円決済しました。")%(int(logData[0][0]), str(logData[0][1]), str(logData[0][2]), int(logData[0][3])))
         
         # ユーザーログの場合
         elif mode == 2:
@@ -312,7 +312,7 @@ class slackLink:
         
         # NFCカード追加ログの場合
         elif mode == 3:
-            self.slack.notify(text=("[カード追加] : %d%s さんに カード番号[%d] の　NFCカードを追加しました。")%(int(logData[0][0]), str(logData[0][1]), int(logData[0][2])))
+            self.slack.notify(text=("[カード追加] : [%d]%s さんに カード番号[%d] の　NFCカードを追加しました。")%(int(logData[0][0]), str(logData[0][1]), int(logData[0][2])))
         
         # それ以外
         else:
