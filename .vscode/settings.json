@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Python36\\python.exe",
+    "python.pythonPath": "C:\\free\\Python\\python.exe",
     "python.formatting.provider": "black",
     "python.linting.pylintEnabled": false
 }
