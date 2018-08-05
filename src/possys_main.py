@@ -3,7 +3,7 @@
 # Python3で動くよ！
 
 ##################################################################
-# POS-System for ProconRoom                             Ver1.00  #
+# POS-System for ProconRoom                             Ver2.10  #
 # 東京工業高等専門学校 プログラミングコンテストゼミ部室用        #
 # NFCカード 簡易決済システム                                     #
 # <各ファイルの説明>                                             #
@@ -25,6 +25,8 @@ import subprocess
 # ユーザーパスワードのハッシュ用
 import hashlib
 import getpass
+# Slack接続用
+import slackweb
 
 import os
 import sys
@@ -47,6 +49,9 @@ class Database:
         # データベースとの，対話クラスのインスタンスを作成
         self.cursor = self.db.cursor()
         print("[  OK  ]: Establish database connection")
+
+        # Slack接続クラスのインスタンスを作成
+        self.slack = slackLink()
 
     # IDm照合処理
     def checkIDm(self, userIDm):
@@ -118,6 +123,9 @@ class Database:
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user")
 
+            # ログ送信
+            self.slack.post(2,self.getUserLog())
+
         except:
             self.cursor.close()
             self.db.close()
@@ -162,6 +170,9 @@ class Database:
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Add new user card")
 
+            # ログ送信
+            self.slack.post(3,self.getNFCLog())
+
         except:
            self.cursor.close()
            self.db.close()
@@ -196,12 +207,66 @@ class Database:
             self.db.commit()    # SQL文をデータベースへ送信(返り血はないのでcommitメソッド)
             print("[  OK  ]: Update money log")
 
+            # ログ送信
+            self.slack.post(1,self.getMoneyLog())
+
+
         except:
             self.cursor.close()
             self.db.close()
             print("[ERROR ]: Function money internal ERROR!")
             print("[ERROR ]: Database Connection ERROR!")
             return False
+    
+    # 残高表示
+    def checkWallet(self,IDm):
+        print("[START ]: Getting your wallet value...")
+
+        # IDmからユーザ番号を取得
+        userNum = self.checkIDm_userNum(IDm)
+
+        # ユーザ番号の該当者の残高を取得
+        self.cursor.execute("SELECT wallet FROM MemberList WHERE MemberNum=%d"%userNum)
+        print("[  OK  ]: Got wallet data")
+        wallet = self.cursor.fetchall()
+        wallet = int(wallet[0][0])
+        return wallet
+    
+    # 決済ログ取得
+    def getMoneyLog(self):
+        print("[START ]: Getting money log data...")
+
+        # ユーザー名付きでログ情報取得
+        # メンバー番号，メンバー名，決済時タイムスタンプ，決済額を取得(リスト型で返される)
+        self.cursor.execute("SELECT MemberList.MemberNum, MemberList.Name, MoneyLog.Date, MoneyLog.Money FROM MemberList, MoneyLog WHERE MoneyLog.MemberNum=MemberList.MemberNum AND MoneyLog.LogNum=(SELECT MAX(LogNum) FROM MoneyLog)")
+        logData = self.cursor.fetchall()
+        print("[  OK  ]: Got money log")
+
+        return logData
+    
+    # ユーザーログ取得
+    def getUserLog(self):
+        print("[START ]: Getting user log data...")
+
+        # ユーザーの追加情報を取得
+        # ユーザー番号，メンバー名を取得
+        self.cursor.execute("SELECT MemberNum,Name FROM MemberList WHERE MemberNum=(SELECT MAX(MemberNum) FROM MemberList)")
+        logData = self.cursor.fetchall()
+        print("[  OK  ]: Got user log")
+
+        return logData
+    
+    # NFCカード追加ログ取得
+    def getNFCLog(self):
+        print("[START ]: Getting NFC log data...")
+
+        # NFCカードの追加情報を取得
+        # ユーザー番号，ユーザー名，カード番号を取得
+        self.cursor.execute("SELECT MemberList.MemberNum, MemberList.Name, NFCID.DataNum FROM MemberList, NFCID WHERE MemberList.MemberNum=NFCID.MemberNum AND NFCID.DataNum=(SELECT MAX(NFCID.DataNum) FROM NFCID) ")
+        logData = self.cursor.fetchall()
+        print("[  OK  ]: Got NFC log")
+
+        return logData
 
 class idmRead:
     def __init__(self):
@@ -229,7 +294,29 @@ class idmRead:
 
 class slackLink:
     def __init__(self):
-        pass
+        # configファイルを参照
+        config = configparser.SafeConfigParser()
+        config.read('setting.ini')
+
+        # Slackのpossys_logチャンネルに接続
+        self.slack = slackweb.Slack(url=config.get('SLACK','url'))
+
+    def post(self, mode, logData):
+        # 金銭ログの場合
+        if mode == 1:
+            self.slack.notify(text=("[決済] : [%d]%s さんが [%s] に %d 円決済しました。")%(int(logData[0][0]), str(logData[0][1]), str(logData[0][2]), int(logData[0][3])))
+        
+        # ユーザーログの場合
+        elif mode == 2:
+            self.slack.notify(text=("[ユーザー追加] : ユーザー番号[%d]に %s さんが登録されました。")%(int(logData[0][0]), str(logData[0][1])))
+        
+        # NFCカード追加ログの場合
+        elif mode == 3:
+            self.slack.notify(text=("[カード追加] : [%d]%s さんに カード番号[%d] の　NFCカードを追加しました。")%(int(logData[0][0]), str(logData[0][1]), int(logData[0][2])))
+        
+        # それ以外
+        else:
+            pass
 
 class mainMenu:
     def __init__(self):
@@ -239,21 +326,24 @@ class mainMenu:
     def mainLogic(self):
         while True:
             print("***** Welcom to possys ! *****")
-            print("select mode:")
+            print("Made by kapipara 2018/08/03 released ver2.1")
             print("1.購入")
             print("2.入金")
-            print("3.ユーザー登録")
-            print("4.NFCカード登録")
-            print("5.NFCカード消去")
-            print("6.ユーザー消去")
-            mode = int(input(">> "))
+            print("3.残高照会")
+            print("4.ユーザー登録")
+            print("5.NFCカード登録")
+            print("6.NFCカード消去")
+            print("7.ユーザー消去")
+            print("select mode:")
+            mode = input(">> ")
 
             # 購入モード
-            if mode == 1:
+            if mode == '1':
                 print("購入金額を入力してください...")
-                amount = input(">> ")
+                amount = str(input(">> "))
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
+                    break
                 print("登録済みのNFCカードをタッチしてください。")
                 amount = -int(amount)
                 tag = self.idmRead.getMain()
@@ -262,20 +352,32 @@ class mainMenu:
                 print("ご購入ありがとうございました。またのご利用をお待ちしております。")
 
             # 入金モード
-            elif mode == 2:
+            elif mode == '2':
                 print("※※※ 必ず貯金箱に現金を投入してから処理を行ってください！ ※※※")
                 print("入金金額を入力してください...")
-                amount = input(">> ")
+                amount = str(input(">> "))
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
+                    break
                 print("登録済みのNFCカードをタッチしてください。")
                 tag = self.idmRead.getMain()
                 userNum = self.database.checkIDm_userNum(tag)
                 self.database.money(userNum, amount)
-                print("ご入金ありがとうございます。データベースが更新されたので安心してください。") 
+                print("\nご入金ありがとうございます。データベースが更新されました。") 
+
+            # 残高照会モード
+            elif mode == '3':
+                print("残高照会を行います。")
+                print("NFCカードを置いてください。")
+                tag = self.idmRead.getMain()
+                wallet = self.database.checkWallet(tag)
+                print("\nあなたの残高は %d 円です。"%wallet)
+                if wallet < 0:
+                    print("※※※ あなたは借金しています。 ※※※")
+                    print("会計から任意のタイミングで徴収されても，返金できる額にとどめてください。")
 
             # ユーザー登録モード
-            elif mode == 3:
+            elif mode == '4':
                 print("ようこそ possys へ！")
                 print("ユーザー登録を行います。必要事項を入力してください。\n")
                 print("パスワードは入力後にSHA256でハッシュされ，データベースに送信されます。\n")
@@ -315,10 +417,10 @@ class mainMenu:
                         print("Plz only input y/n or Nothing!!!\n")
                         cond = True
                 self.database.addUser(name,mail,hash1)
-                print("ご登録ありがとうございます。続いてカード登録を行ってください。")
+                print("\nご登録ありがとうございます。続いてカード登録を行ってください。")
             
             # NFCカード追加モード
-            elif mode == 4:
+            elif mode == '5':
                 hashman = hashlib.sha256()
                 print("新規カード登録処理を行います。")
                 print("あなたのユーザー名を入力してください。")
@@ -329,24 +431,24 @@ class mainMenu:
                 print("続いて，追加したいカードをタッチしてください。")
                 tag = self.idmRead.getMain()
                 self.database.addCard(tag,userName,hashcode)
-                print("カードのご登録を承りました。只今より当該カードはご利用いただけます。")
+                print("\nカードのご登録を承りました。只今より当該カードはご利用いただけます。")
 
             # NFCカード消去モード
-            elif mode == 5:
+            elif mode == '6':
                 print("当機能は未実装です。管理者へ問い合わせてください。")
 
             # ユーザー消去モード
-            elif mode == 6:    
+            elif mode == '7':    
                 print("当機能は未実装です。管理者へ問い合わせてください。")
 
             # 変な値を入力されたとき
             else:
-                print("1~6までの数値を入力してください。")
+                print("1~7までの数値を入力してください。")
             
             print("\n")
 
-try:
-    temp = mainMenu()
-    temp.mainLogic()
-except:
-    print("[ERROR ]: Serious ERROR!!")
+#try:
+temp = mainMenu()
+temp.mainLogic()
+#except:
+    #print("[ERROR ]: Serious ERROR!!")
