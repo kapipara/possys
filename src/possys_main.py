@@ -109,7 +109,7 @@ class Database:
     # ユーザが存在するか確認する
     def checkUser(self,name):
         print("[START ]: checkUser...")
-        self.cursor.excute("SELECT * FROM MemberList WHERE Name=%s"%str(name))
+        self.cursor.execute("SELECT * FROM MemberList WHERE Name=%s"%str(name))
         getUser = self.cursor.fetchall()
         if getUser is None:
             return False
