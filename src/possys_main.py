@@ -3,7 +3,7 @@
 # Python3で動くよ！
 
 ##################################################################
-# POS-System for ProconRoom                             Ver2.11  #
+# POS-System for ProconRoom                             Ver2.12  #
 # 東京工業高等専門学校 プログラミングコンテストゼミ部室用        #
 # NFCカード 簡易決済システム                                     #
 # <各ファイルの説明>                                             #
@@ -337,7 +337,7 @@ class mainMenu:
         while True:
             print("\n")
             print("***** Welcom to possys ! *****")
-            print("Made by kapipara 2018/08/15 released ver2.11")
+            print("Made by kapipara 2018/08/15 released ver2.12")
             print("1.購入")
             print("2.入金")
             print("3.残高照会")
