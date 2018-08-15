@@ -3,7 +3,7 @@
 # Python3で動くよ！
 
 ##################################################################
-# POS-System for ProconRoom                             Ver2.10  #
+# POS-System for ProconRoom                             Ver2.11  #
 # 東京工業高等専門学校 プログラミングコンテストゼミ部室用        #
 # NFCカード 簡易決済システム                                     #
 # <各ファイルの説明>                                             #
@@ -106,6 +106,16 @@ class Database:
             print("[ERROR ]: Database Connection ERROR!")
             return
 
+    # ユーザが存在するか確認する
+    def checkUser(self,name):
+        print("[START ]: checkUser...")
+        self.cursor.execute("SELECT * FROM MemberList WHERE Name='%s'"%str(name))
+        getUser = self.cursor.fetchall()
+        if not getUser:
+            return False
+        return True
+        print("[  OK  ]: user exists")
+
     # ユーザ追加
     def addUser(self,name,mail,hashcode):
         try:
@@ -137,7 +147,7 @@ class Database:
     def addCard(self,userIDm,userName,hashcode):
         try:
             print("[START ]: add new NFC card...")
-
+            
             # NFCIDテーブルからDataNum最大値取得
             self.cursor.execute("SELECT DataNum FROM NFCID WHERE DataNum=(SELECT MAX(DataNum) FROM NFCID)")  # 関数内はSQL文
             newDataNum = self.cursor.fetchall()  # 取得データ代入
@@ -325,8 +335,9 @@ class mainMenu:
     
     def mainLogic(self):
         while True:
+            print("\n")
             print("***** Welcom to possys ! *****")
-            print("Made by kapipara 2018/08/03 released ver2.1")
+            print("Made by kapipara 2018/08/15 released ver2.11")
             print("1.購入")
             print("2.入金")
             print("3.残高照会")
@@ -343,11 +354,14 @@ class mainMenu:
                 amount = str(input(">> "))
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
-                    break
+                    continue
                 print("登録済みのNFCカードをタッチしてください。")
                 amount = -int(amount)
                 tag = self.idmRead.getMain()
                 userNum = self.database.checkIDm_userNum(tag)
+                if userNum == False:
+                    print("[WARNING]: カード照合時に内部エラーが発生しました。")
+                    continue
                 self.database.money(userNum, amount)
                 print("ご購入ありがとうございました。またのご利用をお待ちしております。")
 
@@ -358,10 +372,13 @@ class mainMenu:
                 amount = str(input(">> "))
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
-                    break
+                    continue
                 print("登録済みのNFCカードをタッチしてください。")
                 tag = self.idmRead.getMain()
                 userNum = self.database.checkIDm_userNum(tag)
+                if userNum == False:
+                    print("[WARNING]: カード照合時に内部エラーが発生しました。")
+                    continue
                 self.database.money(userNum, amount)
                 print("\nご入金ありがとうございます。データベースが更新されました。") 
 
@@ -386,6 +403,9 @@ class mainMenu:
                 while cond:
                     print("UserName:")
                     name = input(">> ")
+                    if self.database.checkUser(str(name)):
+                        print("すでに存在するユーザです。重複登録はできません。")
+                        continue
                     print("EmailAddress:")
                     mail = input(">> ")
                     # パスワードのハッシュ処理
@@ -425,6 +445,9 @@ class mainMenu:
                 print("新規カード登録処理を行います。")
                 print("あなたのユーザー名を入力してください。")
                 userName = input(">> ")
+                if not self.database.checkUser(str(userName)):
+                    print("存在しないユーザです。")
+                    continue
                 print("あなたのパスワードを入力してください。")
                 hashman.update(getpass.getpass().encode('utf-8'))
                 hashcode = hashman.hexdigest()
@@ -432,6 +455,8 @@ class mainMenu:
                 tag = self.idmRead.getMain()
                 self.database.addCard(tag,userName,hashcode)
                 print("\nカードのご登録を承りました。只今より当該カードはご利用いただけます。")
+                print("弊部Slackに #possys #possys_log チャンネルを設置しております。")
+                print("既存のバグ，購入/入金ログ等の参照にご活用ください。")
 
             # NFCカード消去モード
             elif mode == '6':
