@@ -111,7 +111,7 @@ class Database:
         print("[START ]: checkUser...")
         self.cursor.execute("SELECT * FROM MemberList WHERE Name='%s'"%str(name))
         getUser = self.cursor.fetchall()
-        if getUser is None:
+        if not getUser:
             return False
         return True
         print("[  OK  ]: user exists")
