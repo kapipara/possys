@@ -335,6 +335,7 @@ class mainMenu:
     
     def mainLogic(self):
         while True:
+            print("\n")
             print("***** Welcom to possys ! *****")
             print("Made by kapipara 2018/08/03 released ver2.1")
             print("1.購入")
@@ -353,7 +354,7 @@ class mainMenu:
                 amount = str(input(">> "))
                 if not amount.isdigit:
                     print("[WARNING]: 適切な数値を入力してください。3億円以上はサポートしていません。")
-                    break
+                    continue
                 print("登録済みのNFCカードをタッチしてください。")
                 amount = -int(amount)
                 tag = self.idmRead.getMain()
@@ -437,7 +438,7 @@ class mainMenu:
                 userName = input(">> ")
                 if not self.database.checkUser(str(userName)):
                     print("存在しないユーザです。")
-                    break
+                    continue
                 print("あなたのパスワードを入力してください。")
                 hashman.update(getpass.getpass().encode('utf-8'))
                 hashcode = hashman.hexdigest()
