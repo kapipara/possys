@@ -137,6 +137,16 @@ class Database:
     def addCard(self,userIDm,userName,hashcode):
         try:
             print("[START ]: add new NFC card...")
+            
+            # UserNameに適合するUserがいるか照合，いない場合は弾く
+            try:
+                self.cursor.execute("SELECT * FROM MemberList WHERE Name=%s"%str(userName))
+                getName = self.cursor.fetchall()
+                if getName[0][0] is None:
+                    raise
+            
+            except:
+                raise
 
             # NFCIDテーブルからDataNum最大値取得
             self.cursor.execute("SELECT DataNum FROM NFCID WHERE DataNum=(SELECT MAX(DataNum) FROM NFCID)")  # 関数内はSQL文
