@@ -106,6 +106,16 @@ class Database:
             print("[ERROR ]: Database Connection ERROR!")
             return
 
+    # ユーザが存在するか確認する
+    def checkUser(self,name):
+        print("[START ]: checkUser...")
+        self.cursor.excute("SELECT * FROM MemberList WHERE Name=%s"%str(name))
+        getUser = self.cursor.fetchall()
+        if getUser is None:
+            return False
+        return True
+        print("[  OK  ]: user exists")
+
     # ユーザ追加
     def addUser(self,name,mail,hashcode):
         try:
@@ -138,16 +148,6 @@ class Database:
         try:
             print("[START ]: add new NFC card...")
             
-            # UserNameに適合するUserがいるか照合，いない場合は弾く
-            try:
-                self.cursor.execute("SELECT * FROM MemberList WHERE Name=%s"%str(userName))
-                getName = self.cursor.fetchall()
-                if getName[0][0] is None:
-                    raise
-            
-            except:
-                raise
-
             # NFCIDテーブルからDataNum最大値取得
             self.cursor.execute("SELECT DataNum FROM NFCID WHERE DataNum=(SELECT MAX(DataNum) FROM NFCID)")  # 関数内はSQL文
             newDataNum = self.cursor.fetchall()  # 取得データ代入
@@ -435,6 +435,9 @@ class mainMenu:
                 print("新規カード登録処理を行います。")
                 print("あなたのユーザー名を入力してください。")
                 userName = input(">> ")
+                if !self.database.checkUser(str(userName)):
+                    print("存在しないユーザです。")
+                    break
                 print("あなたのパスワードを入力してください。")
                 hashman.update(getpass.getpass().encode('utf-8'))
                 hashcode = hashman.hexdigest()
