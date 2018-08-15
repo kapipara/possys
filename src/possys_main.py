@@ -435,7 +435,7 @@ class mainMenu:
                 print("新規カード登録処理を行います。")
                 print("あなたのユーザー名を入力してください。")
                 userName = input(">> ")
-                if !self.database.checkUser(str(userName)):
+                if not self.database.checkUser(str(userName)):
                     print("存在しないユーザです。")
                     break
                 print("あなたのパスワードを入力してください。")
