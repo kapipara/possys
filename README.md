@@ -27,7 +27,7 @@ CUI＋ローカルデータベースで実装。
 
 ### Databaseクラス
 #### __init__(self)
-    Databaseクラスのインスタンスです。  
+    Databaseクラスのコンストラクタです。  
     configparserでconfigファイルをリードして，データベースと接続する処理を行っています。
 
 #### checkIDm(self, userIDm)
@@ -38,6 +38,10 @@ CUI＋ローカルデータベースで実装。
     userIDmに引数として16字以内のNFC IDmを渡すことで，データベース側(/NFCID/IDm)(/NFCID/MemberNum)と照合します。  
     データが存在する場合は最もDataNumが若いデータのUserNumを返します。存在しない場合はFalseを返します。  
     異なるユーザーに同一のカードが動作している場合は動作を保証できません。possysでは，そういった動作をサポートしていません。
+
+#### checkUser(self,name)
+    ユーザ名を渡すことで，任意のユーザが存在するかを判定します。
+    存在するならTrue，しないならFalseを返します。
 
 #### addUser(self,name,mail,hashcode)
     引数として，ユーザー名，ユーザーのメールアドレス，パスワードのsha256ハッシュコード(64字以内)を渡すことで，データベースに新規ユーザを登録します。  
@@ -54,7 +58,7 @@ CUI＋ローカルデータベースで実装。
     
 ### idmReadクラス
 #### __init__(self)
-    idmReadクラスのインスタンスです。  
+    idmReadクラスのコンストラクタです。  
     特に行う動作はありません。
 
 #### getMain(self)
@@ -62,11 +66,19 @@ CUI＋ローカルデータベースで実装。
     nfcpyライブラリがPython2でのみ動作するため，サブプロセスでidmRead.pyをPython2で実行します。値の受け渡しには標準出力を用いています。
 
 ### slackLinkクラス 
-    未実装です。
+#### __init__(self)
+    slackLinkクラスのコンストラクタです。
+    setting.ini内に記述されたSlackとの接続リンクを参照して，Slackと接続します。
+
+#### post(self,mode,logData)
+    Slackへpostする関数です。
+    もっと賢い方法があるような気もしますが，modeでlogがどこから来たかを判定します。
+    1なら金銭処理のログ，2ならユーザ追加ログ，3ならカード追加ログです。
+    logDataはリスト型もしくはタプル型で渡され，所定のフォーマットで送信します。
 
 ### meinMenuクラス
 #### __init__(self)
-    meinMenuクラスのインスタンスです。
+    meinMenuクラスのコンストラクタです。
     databaseクラスとidmReadクラスのインスタンスを作成します。
 
 #### mainLogic(self)
