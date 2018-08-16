@@ -3,7 +3,7 @@
 # Python3で動くよ！
 
 ##################################################################
-# POS-System for ProconRoom                             Ver2.12  #
+# POS-System for ProconRoom                             Ver2.13  #
 # 東京工業高等専門学校 プログラミングコンテストゼミ部室用        #
 # NFCカード 簡易決済システム                                     #
 # <各ファイルの説明>                                             #
@@ -92,10 +92,10 @@ class Database:
             
             # データがない場合，list型の範囲外参照エラーが起きるのでexceptで拾ってあげる
             try:
-                # DataNum-UserNum-IDmの順なので，(n,3)にIDm，(n,2)にUserNumがある
+                # DataNum-UserNum-IDmの順なので，(n,2)にIDm，(n,1)にUserNumがある
                 # 一致データがあればどこでもいいので先頭データから取得
-                if (serverData[0][3]) == str(userIDm):
-                    return serverData[0][2]
+                if (serverData[0][2]) == str(userIDm):
+                    return serverData[0][1]
             except:
                 return False
 
@@ -234,7 +234,6 @@ class Database:
 
         # IDmからユーザ番号を取得
         userNum = self.checkIDm_userNum(IDm)
-
         # ユーザ番号の該当者の残高を取得
         self.cursor.execute("SELECT wallet FROM MemberList WHERE MemberNum=%d"%userNum)
         print("[  OK  ]: Got wallet data")
@@ -337,7 +336,7 @@ class mainMenu:
         while True:
             print("\n")
             print("***** Welcom to possys ! *****")
-            print("Made by kapipara 2018/08/15 released ver2.12")
+            print("Made by kapipara 2018/08/16 released ver2.13")
             print("1.購入")
             print("2.入金")
             print("3.残高照会")
