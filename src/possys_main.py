@@ -363,6 +363,8 @@ class mainMenu:
                     continue
                 self.database.money(userNum, amount)
                 print("ご購入ありがとうございました。またのご利用をお待ちしております。")
+                wallet = self.database.checkWallet(tag)
+                print("\nあなたの残高は %d 円になりました。"%wallet)
 
             # 入金モード
             elif mode == '2':
@@ -380,6 +382,8 @@ class mainMenu:
                     continue
                 self.database.money(userNum, amount)
                 print("\nご入金ありがとうございます。データベースが更新されました。") 
+                wallet = self.database.checkWallet(tag)
+                print("\nあなたの残高は %d 円になりました。"%wallet)
 
             # 残高照会モード
             elif mode == '3':
