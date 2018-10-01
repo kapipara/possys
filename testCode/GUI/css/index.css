@@ -1,0 +1,64 @@
+/* 背景のレイアウト */
+.container{
+    display: grid;
+    grid-gap: 5px;
+}
+
+/* ボタンのレイアウト */
+.button_tile{
+    display: grid;
+    grid-gap: 5px; /* グリッド外の余白 */
+}
+
+/* タイトルのバー */
+.title{
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+    background: slateblue;
+    color: white;
+    padding: 0.5em 1em;
+    /* border-color: azure; */
+}
+
+/* 上2つ(購入，入金)のボタンの実体 */
+.buy_button, .pay_button{
+    display: inline-block;
+    font-size: 100px;
+    font-weight: bold;
+    text-align: center;
+    padding: 100px;
+    grid-row: 1 / 2;
+    text-decoration: none;
+    background: #668ad8;/*ボタン色*/
+    color: #FFF;
+    border-bottom: solid 4px #627295;
+    border-radius: 3px;
+}
+.buy_button:active, .pay_button:active {  /*ボタンを押したとき*/
+    -ms-transform: translateY(4px);
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);   /*下に動く*/
+    border-bottom: none;          /*線を消す*/
+}
+
+/* 下2つ(ユーザ設定，カード設定)のボタンの実体 */
+.user_button, .card_button{
+    display: inline-block;
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+    padding: 50px;
+    grid-row: 2 / 2;
+    text-decoration: none;
+    background: #668ad8;/*ボタン色*/
+    color: #FFF;
+    border-bottom: solid 4px #627295;
+    border-radius: 3px;
+}
+.user_button:active, .card_button:active {  /*ボタンを押したとき*/
+    -ms-transform: translateY(4px);
+    -webkit-transform: translateY(4px);
+    transform: translateY(4px);   /*下に動く*/
+    border-bottom: none;          /*線を消す*/
+}
