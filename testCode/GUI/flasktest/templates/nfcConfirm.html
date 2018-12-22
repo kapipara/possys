@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>possys -NFC読み取り-</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='nfcConfirm.css')}}">
+</head>
+<body>
+    <div id="container">
+        <a href="{{url_for('index')}}" class="title">possys</a>
+        <br><br>
+
+        <!-- GETで受け取った値が正(入金)なら -->
+        {% if value|int() > 0 %}
+        <p id="message">{{value}}円 入金します。NFCカードをタッチしてください。<br>
+                        訂正する場合は下のボタンより戻ってやり直して下さい。</p>
+        
+        <!-- GETで受け取った値が負(購入)なら -->
+        {% elif value|int() < 0 %}
+        <p id="message">{{value}}円 購入します。NFCカードをタッチしてください。<br>
+                        訂正する場合は下のボタンより戻ってやり直して下さい。</p>
+
+        <!-- 余計なことをする奴には死を -->
+        {% else %}
+        <p id="message">F**k you! Go home mother f**ker!</p>
+        {% endif %}
+
+        <img src="{{url_for('static', filename='nfcLogo.png')}}" width="600" height="200">
+        <br><br><br>
+        <a href="{{url_for('buy_main')}}" class="backButton">戻る</a>
+        <a href="{{url_for('index')}}" class="backButton">HOMEへ戻る</a>
+    </div>
+
+</body>
+</html>

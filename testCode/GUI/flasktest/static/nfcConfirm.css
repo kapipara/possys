@@ -6,21 +6,21 @@
     background: slateblue;
     color: white;
     padding: 0.5em 360px;
-    border-color: azure;
+    /* border-color: azure; */
 }
 
-/* 背景のレイアウト */
-.container{
-    display: grid;
-    grid-template-columns: repeat(3, 200px);
+.message{
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 30px;
 }
 
-.item{
+.backButton{
     display: inline-block;
     font-size: 20px;
     font-weight: bold;
     text-align: center;
-    padding: 50px 100px;
+    padding: 10px 20px;
     text-decoration: none;
     background: #668ad8;/*ボタン色*/
     color: #FFF;
