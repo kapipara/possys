@@ -1,0 +1,29 @@
+/* タイトルのバー */
+.title{
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+    background: slateblue;
+    color: white;
+    padding: 0.5em 1em;
+    /* border-color: azure; */
+}
+
+/* 背景のレイアウト */
+.container{
+    display: grid;
+    grid-gap: 5px;
+}
+
+.item{
+    display: inline-block;
+    font-size: 50px;
+    font-weight: bold;
+    text-align: center;
+    padding: 150px;
+    text-decoration: none;
+    background: #668ad8;/*ボタン色*/
+    color: #FFF;
+    border-bottom: solid 4px #627295;
+    border-radius: 3px;
+}

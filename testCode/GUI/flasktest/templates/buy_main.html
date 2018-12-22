@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{url_for('static', filename='buy_main.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='web-grid.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='web-grid.min.css')}}">
+    <title>possys -購入-</title>
+</head>
+<body>
+    <div class="r">
+        <div class="c-12">
+            <a href="{{url_for('index')}}" class="title">possys</a>
+        </div>
+    </div>
+    <div class="r">
+        <div class="c-4">
+            <form action="buy_nfc.html" method="get">
+                <button name ="item" class="item" value="10">10円</button>
+            </form>
+        </div>
+        <div class="c-4">
+            <form action="buy_nfc.html" method="get">
+                <button name ="item" class="item" value="30">30円</button>
+            </form>
+        </div>
+        <div class="c-4">
+            <form action="buy_nfc.html" method="get">
+                <button name ="item" class="item" value="50">50円</button>
+            </form>
+        </div>
+    </div>
+    <div class="r">
+        <div class="c-4">
+            <form action="buy_nfc.html" method="get">
+                <button name ="item" class="item" value="100">100円</button>
+            </form>
+        </div>
+        <div class="c-4">
+            <form action="buy_nfc.html" method="get">
+                <button name ="item" class="item" value="170">170円</button>
+            </form>
+        </div>
+        <div class="c-4">
+            <form action="buy_typeValue.html">
+                <button name ="item" class="item" value="114514">その他</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

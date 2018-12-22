@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>possys</title>
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='index.css')}}">
 </head>
 <body>
     <div class="container">
-        <a href="./index.html" class="title">possys HOME</a>
+        <a href="{{url_for('index')}}" class="title">possys HOME</a>
         <div class="button_tile">
-            <a href="#" class="buy_button">購入</a>
+            <a href="{{url_for('buy_main')}}" class="buy_button">購入</a>
             <a href="#" class="pay_button">入金</a>
             <a href="#" class="user_button">ユーザ設定</a>
             <a href="#" class="card_button">カード設定</a>
