@@ -1,49 +1,42 @@
-#! conding:utf-8
+#! /usr/bin/python
+#! -*- coding:utf-8 -*-
+# Python3で動くよ
 
-from flask import Flask, render_template, request
+##################################################################
+# POS-System for ProconRoom                             Ver2.1  #
+# 東京工業高等専門学校 プログラミングコンテストゼミ部室用        #
+# NFCカード 簡易決済システム                                     #
+# <各ファイルの説明>                                             #
+#     ・説明，注意，システムの著作権などはREADME.mdにあります。  #
+#     ・システムの起動に必要なものはInstallList.mdにあります。   #
+#     ・データベースの構成はdatabaseConstruct.mdにあります。     #
+#     ・possysの諸設定はsetting.iniを所定の書式で編集してくださ  #
+#       い。                                                     #
+##################################################################
+
+# configファイル
 import configparser
+# 時間取得用
 import datetime
-#import mysql.connector
+# データベースアクセス
+# import mysql.connector
+# IDm取得用のライブラリ(Python2をサブプロセスで実行)
 import subprocess
+# ユーザーパスワードのハッシュ用
 import hashlib
 import getpass
+# Slack接続用
 import slackweb
+
 import os
 import sys
 
+from flask import Flask,request, render_template
+
+
 ##########################################################
-##                フロントエンド部分                     ##
+##                   バック部分                          ##
 ##########################################################
-
-app = Flask(__name__)
-
-# ホーム画面
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-# 購入画面
-@app.route('/buy_main')
-def buy_main():
-    return render_template('buy_main.html')
-
-# NFC確認画面
-@app.route('/nfcConfirm', methods=['GET'])
-def nfcConfirm():
-    try:
-        value = request.args.get('value')
-
-
-    except:
-        print("ERROR! Can't GET value\n")
-        exit()
-    
-    return render_template('nfcConfirm.html', value=value)
-
-
-#############################################################
-##                   バックエンド部分                       ##
-#############################################################
 
 # データベース操作クラス
 class Database:
@@ -100,16 +93,16 @@ class Database:
            
             # NFCIDテーブルから条件付き全件取得
             # executeで実行コマンドを指定，fetchallで一致データすべてを取得
-            self.cursor.execute("SELECT MemberNum FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
+            self.cursor.execute("SELECT * FROM NFCID WHERE IDm='%s'"%str(userIDm))   # 関数内はSQL文
             serverData = self.cursor.fetchall()  # 取得データ代入
             print("[  OK  ]: Got server side IDm data")
             
             # データがない場合，list型の範囲外参照エラーが起きるのでexceptで拾ってあげる
             try:
-                # DataNum-UserNum-IDmの順なので，(n,3)にIDm，(n,2)にUserNumがある
+                # DataNum-UserNum-IDmの順なので，(n,2)にIDm，(n,1)にUserNumがある
                 # 一致データがあればどこでもいいので先頭データから取得
-                if (serverData[0][3]) == str(userIDm):
-                    return serverData[0][2]
+                if (serverData[0][2]) == str(userIDm):
+                    return serverData[0][1]
             except:
                 return False
 
@@ -119,6 +112,16 @@ class Database:
             print("[ERROR ]: Function checkIDm_userNum internal ERROR!")
             print("[ERROR ]: Database Connection ERROR!")
             return
+
+    # ユーザが存在するか確認する
+    def checkUser(self,name):
+        print("[START ]: checkUser...")
+        self.cursor.execute("SELECT * FROM MemberList WHERE Name='%s'"%str(name))
+        getUser = self.cursor.fetchall()
+        if not getUser:
+            return False
+        return True
+        print("[  OK  ]: user exists")
 
     # ユーザ追加
     def addUser(self,name,mail,hashcode):
@@ -151,7 +154,7 @@ class Database:
     def addCard(self,userIDm,userName,hashcode):
         try:
             print("[START ]: add new NFC card...")
-
+            
             # NFCIDテーブルからDataNum最大値取得
             self.cursor.execute("SELECT DataNum FROM NFCID WHERE DataNum=(SELECT MAX(DataNum) FROM NFCID)")  # 関数内はSQL文
             newDataNum = self.cursor.fetchall()  # 取得データ代入
@@ -238,7 +241,6 @@ class Database:
 
         # IDmからユーザ番号を取得
         userNum = self.checkIDm_userNum(IDm)
-
         # ユーザ番号の該当者の残高を取得
         self.cursor.execute("SELECT wallet FROM MemberList WHERE MemberNum=%d"%userNum)
         print("[  OK  ]: Got wallet data")
@@ -331,6 +333,40 @@ class slackLink:
         # それ以外
         else:
             pass
+
+##########################################################
+##                    フロント部分                       ##
+##########################################################
+
+app = Flask(__name__)
+#logic = Database()
+nfc = idmRead()
+
+
+# ホーム画面
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# 購入画面
+@app.route('/buy_main')
+def buy_main():
+    return render_template('buy_main.html')
+
+# NFC確認画面
+@app.route('/nfcConfirm', methods=['GET'])
+def nfcConfirm():
+    try:
+        value = request.args.get('value')
+
+    except:
+        print("ERROR! Can't GET value\n")
+        exit()
+    
+    return render_template('nfcConfirm.html', value=value)
+
+
+
 
 if __name__ == '__main__':
     app.debug = True
